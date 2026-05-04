@@ -1,0 +1,393 @@
+@model Biolife.Application.ViewModels.AdminVm
+@{
+    Layout = null;
+    var role = Model.CurrentUserRole;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel.css">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel_responsive.css">
+    <script defer src="~/admin/Script/products.js"></script>
+</head>
+<body data-can-products="@(role?.Products == true ? "true" : "false")"
+      data-can-slider="@(role?.Slider == true ? "true" : "false")"
+      data-can-authors="@(role?.Author == true ? "true" : "false")"
+      data-can-genres="@(role?.Genres == true ? "true" : "false")"
+      data-can-users="@(role?.Users == true ? "true" : "false")"
+      data-can-roles="@(role?.Roles == true ? "true" : "false")"
+      data-can-create-notes="@(role?.CreateNotes == true ? "true" : "false")">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-text">Admin<span>Panel</span></span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/Admin/Index" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/Admin/Products" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                <span>Products</span>
+            </a>
+            <a href="/Admin/Carousel" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" /><polyline points="16 2 12 7 8 2" /></svg>
+                <span>Slider</span>
+            </a>
+            <a href="/Admin/Authors" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" /></svg>
+                <span>Authors</span>
+            </a>
+            <a href="/Admin/Genres" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
+                <span>Genres</span>
+            </a>
+            <a href="/Admin/Users" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Users</span>
+            </a>
+            <a href="/Admin/Roles" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" />
+                </svg>
+                <span>Roles</span>
+            </a>
+            <a href="/Admin/Notes" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16v16H4z" />
+                    <path d="M8 8h8" />
+                    <path d="M8 12h8" />
+                    <path d="M8 16h5" />
+                </svg>
+                <span>Notes</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item nav-logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                <span>Exit to site</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+            </button>
+            <h1 class="page-title">Products</h1>
+            <div class="topbar-right">
+                <span class="topbar-date" id="topbarDate"></span>
+                <div class="topbar-user">
+                    <div class="user-avatar">@((!string.IsNullOrWhiteSpace(User.Identity?.Name) ? User.Identity.Name!.Substring(0, 1).ToUpperInvariant() : "A"))</div>
+                    <span>@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Admin" : User.Identity!.Name)</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-actions">
+                <div class="search-bar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                    <input type="text" placeholder="Search product..." id="bookSearch">
+                </div>
+                <button class="btn-primary" onclick="document.getElementById('addModal').classList.add('open')">+ Add Product</button>
+            </div>
+
+            <div class="card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cover</th>
+                            <th>Name</th>
+                            <th>Author</th>
+                            <th>Genre</th>
+                            <th>Price</th>
+                            <th>Featured</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booksBody">
+                        @foreach (var p in Model.Products)
+                        {
+                            <tr>
+                                <td>#@p.Id</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(p.ImageUrl))
+                                    {
+                                        <span class="image-hover-wrap">
+                                            <img src="@p.ImageUrl" class="book-thumb" alt="cover">
+                                            <span class="image-hover-popover">
+                                                <img src="@p.ImageUrl" alt="@p.Name">
+                                            </span>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <div class="book-thumb" style="background:#eee"></div>
+                                    }
+                                </td>
+                                <td><strong>@p.Name</strong></td>
+                                <td>@p.Author?.Name</td>
+                                <td><span class="badge badge-info">@p.Genre?.Name</span></td>
+                                <td>&#8380; @p.Price</td>
+                                <td>
+                                    @if (p.IsFeatured)
+                                    {
+                                        <span class="badge badge-success">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">No</span>
+                                    }
+                                </td>
+                                <td class="actions-cell">
+                                    <button type="button"
+                                            class="btn-icon btn-edit-product"
+                                            title="Edit"
+                                            data-id="@p.Id"
+                                            data-name="@p.Name"
+                                            data-price="@p.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                            data-costprice="@p.CostPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                            data-discountpercent="@p.DiscountPercent.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                            data-authorid="@p.AuthorId"
+                                            data-genreid="@p.GenreId"
+                                            data-description="@p.Description"
+                                            data-isfeatured="@p.IsFeatured.ToString().ToLowerInvariant()"
+                                            data-isnew="@p.IsNew.ToString().ToLowerInvariant()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9" />
+                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                        </svg>
+                                    </button>
+                                    <form method="post" action="/Admin/DeleteProduct" style="display:inline">
+                                        <input type="hidden" name="id" value="@p.Id">
+                                        <button type="button" class="btn-icon btn-del" title="Delete">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6" />
+                                                <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                                                <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" />
+                                                <line x1="10" y1="11" x2="10" y2="17" />
+                                                <line x1="14" y1="11" x2="14" y2="17" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Product</h3>
+                <button class="modal-close" onclick="document.getElementById('addModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <form method="post" action="/Admin/CreateProduct" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div asp-validation-summary="All" class="validation-summary"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" name="Name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Price (&#8380;) *</label>
+                            <input type="number" name="Price" step="0.01" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cost Price (&#8380;)</label>
+                            <input type="number" name="CostPrice" step="0.01" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount %</label>
+                            <input type="number" name="DiscountPercent" step="0.01" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Author</label>
+                            <select name="AuthorId" class="form-input">
+                                @foreach (var a in Model.Authors)
+                                {
+                                    <option value="@a.Id">@a.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Genre</label>
+                            <select name="GenreId" class="form-input">
+                                @foreach (var g in Model.Genres)
+                                {
+                                    <option value="@g.Id">@g.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="Description" class="form-input form-textarea"></textarea>
+                    </div>
+                    <div class="product-image-fields">
+                        <div class="form-group">
+                            <label>Cover Image *</label>
+                            <div class="file-upload-area">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                <span class="file-upload-label">Upload</span>
+                                <input type="file" name="imageFile" accept=".jpg,.jpeg,.png,.gif" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Hover Image</label>
+                            <div class="file-upload-area">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                <span class="file-upload-label">Upload</span>
+                                <input type="file" name="hoverImageFile" accept=".jpg,.jpeg,.png,.gif">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:20px">
+                            <input type="checkbox" name="IsFeatured" value="true" id="isFeatured">
+                            <label for="isFeatured" style="margin:0">Featured</label>
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:20px">
+                            <input type="checkbox" name="IsNew" value="true" id="isNew">
+                            <label for="isNew" style="margin:0">New</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <button class="modal-close" onclick="document.getElementById('editModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <form method="post" action="/Admin/UpdateProduct" enctype="multipart/form-data">
+                <input type="hidden" name="Id" id="editProductId">
+                <div class="modal-body">
+                    <div asp-validation-summary="All" class="validation-summary"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" name="Name" id="editProductName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Price (&#8380;) *</label>
+                            <input type="number" name="Price" id="editProductPrice" step="0.01" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cost Price (&#8380;)</label>
+                            <input type="number" name="CostPrice" id="editProductCostPrice" step="0.01" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount %</label>
+                            <input type="number" name="DiscountPercent" id="editProductDiscountPercent" step="0.01" class="form-input">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Author</label>
+                            <select name="AuthorId" id="editProductAuthorId" class="form-input">
+                                @foreach (var a in Model.Authors)
+                                {
+                                    <option value="@a.Id">@a.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Genre</label>
+                            <select name="GenreId" id="editProductGenreId" class="form-input">
+                                @foreach (var g in Model.Genres)
+                                {
+                                    <option value="@g.Id">@g.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="Description" id="editProductDescription" class="form-input form-textarea"></textarea>
+                    </div>
+                    <div class="product-image-fields">
+                        <div class="form-group">
+                            <label>Cover Image (optional)</label>
+                            <div class="file-upload-area">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                <span class="file-upload-label">Upload</span>
+                                <input type="file" name="imageFile" accept=".jpg,.jpeg,.png,.gif">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Hover Image (optional)</label>
+                            <div class="file-upload-area">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                                <span class="file-upload-label">Upload</span>
+                                <input type="file" name="hoverImageFile" accept=".jpg,.jpeg,.png,.gif">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:20px">
+                            <input type="checkbox" name="IsFeatured" value="true" id="editIsFeatured">
+                            <label for="editIsFeatured" style="margin:0">Featured</label>
+                        </div>
+                        <div class="form-group" style="display:flex;align-items:center;gap:10px;padding-top:20px">
+                            <input type="checkbox" name="IsNew" value="true" id="editIsNew">
+                            <label for="editIsNew" style="margin:0">New</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('editModal').classList.remove('open')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:14px;color:#555;line-height:1.6">Are you sure you want to delete this product?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('open')">Cancel</button>
+                <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+    <script defer src="~/admin/Script/admin_panel.js"></script>
+</body>
+</html>

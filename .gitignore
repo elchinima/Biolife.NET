@@ -1,0 +1,65 @@
+# Build output
+**/bin/
+**/obj/
+**/out/
+**/artifacts/
+**/TestResults/
+**/coverage/
+**/publish/
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Logs and local diagnostics
+*.log
+logs/
+debug/
+debug-build*.log
+devserver*.log
+trace*.txt
+
+# Local configuration and secrets
+appsettings.json
+appsettings.*.json
+!appsettings.Example.json
+!appsettings.Template.json
+!appsettings.sample.json
+secrets.json
+*.secrets.json
+*.key
+*.pem
+*.pfx
+*.p12
+*.cer
+*.crt
+*.env
+.env
+.env.*
+!.env.example
+
+# ASP.NET Core user secrets and local DB files
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf
+
+# User uploaded runtime files
+**/wwwroot/uploads/*
+!**/wwwroot/uploads/.gitkeep
+
+# NuGet
+*.nupkg
+packages/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini

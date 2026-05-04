@@ -1,0 +1,195 @@
+@model Biolife.Application.ViewModels.AdminVm
+@{
+    Layout = null;
+    var role = Model.CurrentUserRole;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authors - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel.css">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel_responsive.css">
+</head>
+<body data-can-products="@(role?.Products == true ? "true" : "false")"
+      data-can-slider="@(role?.Slider == true ? "true" : "false")"
+      data-can-authors="@(role?.Author == true ? "true" : "false")"
+      data-can-genres="@(role?.Genres == true ? "true" : "false")"
+      data-can-users="@(role?.Users == true ? "true" : "false")"
+      data-can-roles="@(role?.Roles == true ? "true" : "false")"
+      data-can-create-notes="@(role?.CreateNotes == true ? "true" : "false")">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><span class="logo-text">Admin<span>Panel</span></span></div>
+        <nav class="sidebar-nav">
+            <a href="/Admin/Index" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/Admin/Products" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                <span>Products</span>
+            </a>
+            <a href="/Admin/Carousel" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" /><polyline points="16 2 12 7 8 2" /></svg>
+                <span>Slider</span>
+            </a>
+            <a href="/Admin/Authors" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" /></svg>
+                <span>Authors</span>
+            </a>
+            <a href="/Admin/Genres" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
+                <span>Genres</span>
+            </a>
+            <a href="/Admin/Users" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Users</span>
+            </a>
+            <a href="/Admin/Roles" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" />
+                </svg>
+                <span>Roles</span>
+            </a>
+            <a href="/Admin/Notes" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16v16H4z" />
+                    <path d="M8 8h8" />
+                    <path d="M8 12h8" />
+                    <path d="M8 16h5" />
+                </svg>
+                <span>Notes</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item nav-logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                <span>Exit to site</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+            </button>
+            <h1 class="page-title">Authors</h1>
+            <div class="topbar-right">
+                <span class="topbar-date" id="topbarDate"></span>
+                <div class="topbar-user"><div class="user-avatar">@((!string.IsNullOrWhiteSpace(User.Identity?.Name) ? User.Identity.Name!.Substring(0, 1).ToUpperInvariant() : "A"))</div><span>@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Admin" : User.Identity!.Name)</span></div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-actions">
+                <div class="search-bar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                    <input type="text" placeholder="Search author..." id="authorSearch">
+                </div>
+                <button class="btn-primary" onclick="document.getElementById('addModal').classList.add('open')">+ Add Author</button>
+            </div>
+
+            <div class="card">
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Name</th><th>Books</th><th>Actions</th></tr></thead>
+                    <tbody id="authorsBody">
+                        @foreach (var a in Model.Authors)
+                        {
+                            <tr>
+                                <td>#@a.Id</td>
+                                <td><strong>@a.Name</strong></td>
+                                <td><span class="badge badge-info">@(a.Products?.Count ?? 0)</span></td>
+                                <td class="actions-cell">
+                                    <button class="btn-icon" title="Edit" onclick="openEdit(@a.Id, '@Html.Raw((a.Name ?? string.Empty).Replace("'", "\\'"))')">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20h9" />
+                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon btn-del" title="Delete" onclick="openConfirm(@a.Id)">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+                                            <path d="M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h3>Add Author</h3><button class="modal-close" onclick="document.getElementById('addModal').classList.remove('open')">&#10005;</button></div>
+            <form method="post" action="/Admin/CreateAuthor">
+                <div class="modal-body"><div class="form-group"><label>Name *</label><input type="text" name="Name" class="form-input" required></div></div>
+                <div class="modal-footer"><button type="button" class="btn-secondary" onclick="document.getElementById('addModal').classList.remove('open')">Cancel</button><button type="submit" class="btn-primary">Add Author</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h3>Edit Author</h3><button class="modal-close" onclick="document.getElementById('editModal').classList.remove('open')">&#10005;</button></div>
+            <form method="post" action="/Admin/UpdateAuthor">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="editAuthorId">
+                    <div class="form-group"><label>Name *</label><input type="text" name="Name" id="editAuthorName" class="form-input" required></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn-secondary" onclick="document.getElementById('editModal').classList.remove('open')">Cancel</button><button type="submit" class="btn-primary">Save</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal modal-sm">
+            <div class="modal-header"><h3>Confirm Deletion</h3><button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('open')">&#10005;</button></div>
+            <div class="modal-body"><p style="font-size:14px;color:#555;line-height:1.6">Are you sure you want to delete this author?</p></div>
+            <div class="modal-footer"><button class="btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('open')">Cancel</button><button class="btn-danger" id="confirmDeleteBtn">Delete</button></div>
+        </div>
+    </div>
+
+    <form id="deleteForm" method="post" action="/Admin/DeleteAuthor" style="display:none">
+        <input type="hidden" name="Id" id="deleteAuthorId">
+    </form>
+
+    <script defer src="~/admin/Script/admin_panel.js"></script>
+    <script>
+        document.getElementById('authorSearch')?.addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('#authorsBody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        function openEdit(id, name) {
+            document.getElementById('editAuthorId').value = id;
+            document.getElementById('editAuthorName').value = name;
+            document.getElementById('editModal').classList.add('open');
+        }
+
+        function openConfirm(id) {
+            document.getElementById('deleteAuthorId').value = id;
+            const btn = document.getElementById('confirmDeleteBtn');
+            if (btn) btn.onclick = () => document.getElementById('deleteForm').submit();
+            document.getElementById('confirmModal').classList.add('open');
+        }
+    </script>
+</body>
+</html>
+
+

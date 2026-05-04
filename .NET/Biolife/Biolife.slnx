@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Biolife.Application/Biolife.Application.csproj" />
+    <Project Path="Biolife.Domain/Biolife.Domain.csproj" />
+    <Project Path="Biolife.Infrastructure/Biolife.Infrastructure.csproj" />
+    <Project Path="Biolife.Persistence/Biolife.Persistence.csproj" />
+    <Project Path="Biolife.Web/Biolife.Web.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,900 @@
+@model Biolife.Application.ViewModels.AdminVm
+@{
+    Layout = null;
+    var role = Model.CurrentUserRole;
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var currentUserIdInt = int.TryParse(currentUserId, out var parsedCurrentUserIdForRoleActions)
+        ? parsedCurrentUserIdForRoleActions
+        : (int?)null;
+    var currentUserForRoleActions = currentUserIdInt.HasValue
+        ? Model.Users.FirstOrDefault(u => u.Id == currentUserIdInt.Value)
+        : null;
+    var actorRoleSortOrder = currentUserForRoleActions != null
+        ? GetHighestRoleSortOrder(currentUserForRoleActions)
+        : null;
+    var orderedRoles = Model.Roles
+        .OrderBy(r => r.SortOrder)
+        .ThenBy(r => r.Id)
+        .ToList();
+}
+@functions {
+    private static int? GetHighestRoleSortOrder(User user)
+    {
+        var sortOrderFromMany = (user.UserRoles ?? Enumerable.Empty<UserRole>())
+            .Where(ur => ur.Role != null)
+            .Select(ur => (int?)ur.Role!.SortOrder)
+            .OrderBy(x => x)
+            .FirstOrDefault();
+
+        if (sortOrderFromMany.HasValue)
+            return sortOrderFromMany.Value;
+
+        return user.Role?.SortOrder;
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roles - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel.css">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel_responsive.css">
+    <style>
+        .role-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid #ddd;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .role-permissions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .user-dropdown {
+            min-width: 180px;
+        }
+
+        .user-dropdown.open-up {
+            top: auto;
+            bottom: 100%;
+        }
+
+        .user-dropdown.open-down {
+            top: calc(100% + 4px);
+            bottom: auto;
+        }
+
+        .dropdown-wrapper {
+            position: relative;
+        }
+
+        #rolesTable tbody tr {
+            position: relative;
+        }
+
+        #rolesTable tbody tr.role-menu-active {
+            z-index: 20;
+        }
+
+        #rolesTable tbody tr.role-menu-active td {
+            position: relative;
+            z-index: 20;
+        }
+
+        #rolesTable tbody tr.role-menu-active .user-dropdown {
+            z-index: 120;
+        }
+
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #444;
+            text-decoration: none;
+            transition: background .15s;
+        }
+
+        .user-dropdown a:hover {
+            background: #f5f5f5;
+        }
+
+        .user-dropdown form {
+            margin: 0;
+        }
+
+        .dropdown-danger-btn {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #b42318;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-danger-btn:hover {
+            background: #fff1f1;
+        }
+
+        .dropdown-protected-note {
+            display: block;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .more-roles-badge {
+            cursor: help;
+        }
+
+        .users-list {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .role-user-item {
+            border: 1px solid #ececec;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fafafa;
+        }
+
+        .role-user-item strong {
+            display: block;
+            font-size: 13px;
+            color: #222;
+        }
+
+        .role-user-item span {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .role-user-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .role-user-meta {
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .role-user-role {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #eef3e4;
+            color: #567a25;
+            font-weight: 600;
+        }
+
+        .role-user-role.none {
+            background: #f2f2f2;
+            color: #777;
+        }
+
+        .empty-users {
+            font-size: 13px;
+            color: #999;
+            padding: 10px 0;
+        }
+
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 14px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .role-order-cell {
+            font-weight: 700;
+            color: #5e5e5e;
+        }
+
+        .role-order-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .role-order-actions form {
+            margin: 0;
+        }
+
+        .role-users-search {
+            margin-bottom: 12px;
+            max-width: 100%;
+        }
+
+        .manage-user-item {
+            border: 1px solid #ececec;
+            border-radius: 10px;
+            padding: 12px;
+            background: #fafafa;
+        }
+
+        .manage-user-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .manage-user-form.is-readonly {
+            opacity: 0.75;
+        }
+
+        .manage-user-form.is-readonly .manage-role-item,
+        .manage-user-form.is-readonly button[type="submit"] {
+            cursor: not-allowed;
+        }
+
+        .manage-user-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .manage-user-name {
+            font-size: 13px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        .manage-user-email {
+            margin-top: 2px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .manage-user-summary {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .manage-role-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px 12px;
+        }
+
+        .manage-role-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .manage-user-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body data-can-products="@(role?.Products == true ? "true" : "false")"
+      data-can-slider="@(role?.Slider == true ? "true" : "false")"
+      data-can-authors="@(role?.Author == true ? "true" : "false")"
+      data-can-genres="@(role?.Genres == true ? "true" : "false")"
+      data-can-users="@(role?.Users == true ? "true" : "false")"
+      data-can-roles="@(role?.Roles == true ? "true" : "false")"
+      data-can-create-notes="@(role?.CreateNotes == true ? "true" : "false")">
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><span class="logo-text">Admin<span>Panel</span></span></div>
+        <nav class="sidebar-nav">
+            <a href="/Admin/Index" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="/Admin/Products" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
+                <span>Products</span>
+            </a>
+            <a href="/Admin/Carousel" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" /><polyline points="16 2 12 7 8 2" /></svg>
+                <span>Slider</span>
+            </a>
+            <a href="/Admin/Authors" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" /></svg>
+                <span>Authors</span>
+            </a>
+            <a href="/Admin/Genres" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
+                <span>Genres</span>
+            </a>
+            <a href="/Admin/Users" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>Users</span>
+            </a>
+            <a href="/Admin/Roles" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" />
+                </svg>
+                <span>Roles</span>
+            </a>
+            <a href="/Admin/Notes" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16v16H4z" />
+                    <path d="M8 8h8" />
+                    <path d="M8 12h8" />
+                    <path d="M8 16h5" />
+                </svg>
+                <span>Notes</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="/" class="nav-item nav-logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
+                <span>Exit to site</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
+            </button>
+            <h1 class="page-title">Roles</h1>
+            <div class="topbar-right">
+                <span class="topbar-date" id="topbarDate"></span>
+                <div class="topbar-user">
+                    <div class="user-avatar">@((!string.IsNullOrWhiteSpace(User.Identity?.Name) ? User.Identity.Name!.Substring(0, 1).ToUpperInvariant() : "A"))</div>
+                    <span>@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "Admin" : User.Identity!.Name)</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-actions">
+                <div class="search-bar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+                    <input type="text" id="roleSearch" placeholder="Search role...">
+                </div>
+                <button class="btn-primary" onclick="document.getElementById('addRoleModal').classList.add('open')">+ Add Role</button>
+            </div>
+
+            <div class="card">
+                <table class="data-table" id="rolesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Order</th>
+                            <th>Role</th>
+                            <th>Color</th>
+                            <th>Permissions</th>
+                            <th>Users</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var roleIndex = 0; roleIndex < orderedRoles.Count; roleIndex++)
+                        {
+                            var item = orderedRoles[roleIndex];
+                            var usersCount = Model.Users.Count(u =>
+                                (u.UserRoles?.Any(ur => ur.RoleId == item.Id) ?? false) ||
+                                ((u.UserRoles == null || u.UserRoles.Count == 0) && u.RoleId == item.Id));
+                            var canManageRole = actorRoleSortOrder.HasValue && actorRoleSortOrder.Value < item.SortOrder;
+                            var canMoveRoleUp = canManageRole
+                                && roleIndex > 0
+                                && actorRoleSortOrder.HasValue
+                                && actorRoleSortOrder.Value < orderedRoles[roleIndex - 1].SortOrder;
+                            var canMoveRoleDown = canManageRole
+                                && roleIndex < orderedRoles.Count - 1
+                                && actorRoleSortOrder.HasValue
+                                && actorRoleSortOrder.Value < orderedRoles[roleIndex + 1].SortOrder;
+
+                            <tr>
+                                <td>#@item.Id</td>
+                                <td class="role-order-cell">@item.SortOrder</td>
+                                <td><strong>@item.Name</strong></td>
+                                <td>
+                                    <span class="role-color-dot" style="background:@item.Color"></span>
+                                    <span>@item.Color</span>
+                                </td>
+                                <td>
+                                    <div class="role-permissions">
+                                        @if (item.AdminPanel) { <span class="badge badge-info">Admin Panel</span> }
+                                        @if (item.Products) { <span class="badge badge-info">Products</span> }
+                                        @if (item.Slider) { <span class="badge badge-info">Slider</span> }
+                                        @if (item.Author) { <span class="badge badge-info">Authors</span> }
+                                        @if (item.Genres) { <span class="badge badge-info">Genres</span> }
+                                        @if (item.Users) { <span class="badge badge-info">Users</span> }
+                                        @if (item.Roles) { <span class="badge badge-info">Roles</span> }
+                                        @if (item.CreateNotes) { <span class="badge badge-info">Create Notes</span> }
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-success">@usersCount</span></td>
+                                <td>
+                                    <div class="actions-cell">
+                                        <div class="role-order-actions">
+                                            <form method="post" action="/Admin/MoveRoleUp">
+                                                <input type="hidden" name="id" value="@item.Id">
+                                                <button type="submit" class="btn-icon" title="Move Up" aria-label="Move role up" @(!canMoveRoleUp ? "disabled" : null)>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="18 15 12 9 6 15"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                            <form method="post" action="/Admin/MoveRoleDown">
+                                                <input type="hidden" name="id" value="@item.Id">
+                                                <button type="submit" class="btn-icon" title="Move Down" aria-label="Move role down" @(!canMoveRoleDown ? "disabled" : null)>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <div class="dropdown-wrapper">
+                                            <button class="btn-icon" title="Actions" onclick="toggleRoleMenu(@item.Id)">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                    <circle cx="12" cy="5" r="1.5" />
+                                                    <circle cx="12" cy="12" r="1.5" />
+                                                    <circle cx="12" cy="19" r="1.5" />
+                                                </svg>
+                                            </button>
+                                            <div class="user-dropdown" id="role-menu-@item.Id">
+                                                <a href="#" onclick="openRoleUsers(@item.Id, '@Html.Raw((item.Name ?? string.Empty).Replace("'", "\\'"))'); return false;">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="9" cy="7" r="4" />
+                                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                                    </svg>
+                                                    <span>Manage Users</span>
+                                                </a>
+                                                @if (canManageRole)
+                                                {
+                                                    <a href="#"
+                                                       data-role-id="@item.Id"
+                                                       data-role-name="@item.Name"
+                                                       data-role-color="@item.Color"
+                                                       data-role-admin-panel="@(item.AdminPanel ? "true" : "false")"
+                                                       data-role-products="@(item.Products ? "true" : "false")"
+                                                       data-role-slider="@(item.Slider ? "true" : "false")"
+                                                       data-role-author="@(item.Author ? "true" : "false")"
+                                                       data-role-genres="@(item.Genres ? "true" : "false")"
+                                                       data-role-users="@(item.Users ? "true" : "false")"
+                                                       data-role-roles="@(item.Roles ? "true" : "false")"
+                                                       data-role-create-notes="@(item.CreateNotes ? "true" : "false")"
+                                                       onclick="openRoleEditFromElement(this); return false;">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M12 20h9" />
+                                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                                                        </svg>
+                                                        <span>Edit Role</span>
+                                                    </a>
+                                                    <form method="post" action="/Admin/DeleteRole" onsubmit="return confirmRoleDelete(this);">
+                                                        <input type="hidden" name="id" value="@item.Id">
+                                                        <button type="submit" class="dropdown-danger-btn">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                <polyline points="3 6 5 6 21 6" />
+                                                                <path d="M19 6l-1 14H6L5 6" />
+                                                                <path d="M10 11v6" />
+                                                                <path d="M14 11v6" />
+                                                                <path d="M9 6V4h6v2" />
+                                                            </svg>
+                                                            <span>Delete Role</span>
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="dropdown-protected-note">Protected by hierarchy</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="roleUsersModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="roleUsersTitle">Manage Role Users</h3>
+                <button class="modal-close" onclick="document.getElementById('roleUsersModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-bar role-users-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="roleUsersSearch" placeholder="Search user by name or email...">
+                </div>
+                <div id="roleUsersList" class="users-list">
+                    @{
+                        var actorUserId = int.TryParse(currentUserId, out var parsedCurrentUserId)
+                            ? parsedCurrentUserId
+                            : (int?)null;
+
+                        var actorUser = actorUserId.HasValue
+                            ? Model.Users.FirstOrDefault(u => u.Id == actorUserId.Value)
+                            : null;
+
+                        var actorHighestSortOrder = actorUser != null
+                            ? GetHighestRoleSortOrder(actorUser)
+                            : null;
+                    }
+                    @foreach (var user in Model.Users.OrderBy(u => u.Name))
+                    {
+                        var assignedRoleIds = user.UserRoles
+                            .Select(ur => ur.RoleId)
+                            .ToHashSet();
+
+                        if (assignedRoleIds.Count == 0 && user.RoleId.HasValue)
+                            assignedRoleIds.Add(user.RoleId.Value);
+
+                        var assignedRoles = Model.Roles
+                            .Where(r => assignedRoleIds.Contains(r.Id))
+                            .OrderBy(r => r.SortOrder)
+                            .ThenBy(r => r.Id)
+                            .ToList();
+
+                        var highestRole = assignedRoles.FirstOrDefault();
+                        var extraRolesText = string.Join(", ", assignedRoles.Skip(1).Select(r => r.Name));
+                        var extraRoleCount = Math.Max(0, assignedRoles.Count - 1);
+                        var searchText = $"{user.Name} {user.Email}".ToLowerInvariant();
+                        var isCurrentUser = currentUserId == user.Id.ToString();
+                        var targetHighestSortOrder = GetHighestRoleSortOrder(user);
+                        var canManageTarget = isCurrentUser
+                            || actorHighestSortOrder == null
+                            || targetHighestSortOrder == null
+                            || actorHighestSortOrder < targetHighestSortOrder;
+
+                        <div class="manage-user-item" data-user-search="@searchText">
+                            <form method="post" action="/Admin/UpdateUserRoles" class="manage-user-form @(canManageTarget ? string.Empty : "is-readonly")">
+                                <input type="hidden" name="userId" value="@user.Id">
+                                <div class="manage-user-head">
+                                    <div>
+                                        <div class="manage-user-name">@user.Name</div>
+                                        <div class="manage-user-email">@user.Email</div>
+                                    </div>
+                                    <div class="manage-user-summary">
+                                        @if (highestRole != null)
+                                        {
+                                            <span class="badge badge-info">@highestRole.Name</span>
+                                            @if (extraRoleCount > 0)
+                                            {
+                                                <span class="badge badge-success more-roles-badge" title="@extraRolesText">+@extraRoleCount</span>
+                                            }
+                                            @if (!canManageTarget)
+                                            {
+                                                <span class="badge badge-danger">Protected by hierarchy</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">No role</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="manage-role-grid">
+                                    @foreach (var currentRole in Model.Roles.OrderBy(r => r.SortOrder).ThenBy(r => r.Id))
+                                    {
+                                        var isChecked = assignedRoleIds.Contains(currentRole.Id);
+                                        var canAssignRole = actorHighestSortOrder.HasValue && actorHighestSortOrder.Value < currentRole.SortOrder;
+                                        var canChangeRole = canManageTarget && canAssignRole;
+                                        <label class="manage-role-item" data-role-id="@currentRole.Id">
+                                            <input type="checkbox" name="roleIds" value="@currentRole.Id" @(isChecked ? "checked" : null) @(!canChangeRole ? "disabled" : null)>
+                                            <span>@currentRole.Name</span>
+                                        </label>
+                                    }
+                                </div>
+
+                                <div class="manage-user-footer">
+                                    <button type="submit" class="btn-primary btn-sm" @(!canManageTarget ? "disabled" : null)>Save Roles</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('roleUsersModal').classList.remove('open')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="addRoleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Role</h3>
+                <button class="modal-close" onclick="document.getElementById('addRoleModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <form method="post" action="/Admin/CreateRole">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Role Name *</label>
+                            <input type="text" name="name" class="form-input" maxlength="60" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" name="color" class="form-input" value="#888888">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Permissions</label>
+                        <div class="permissions-grid">
+                            <label class="permission-item"><input type="checkbox" name="adminPanel" value="true" @(role?.AdminPanel == true ? null : "disabled")> Admin Panel</label>
+                            <label class="permission-item"><input type="checkbox" name="products" value="true" @(role?.Products == true ? null : "disabled")> Products</label>
+                            <label class="permission-item"><input type="checkbox" name="slider" value="true" @(role?.Slider == true ? null : "disabled")> Slider</label>
+                            <label class="permission-item"><input type="checkbox" name="author" value="true" @(role?.Author == true ? null : "disabled")> Authors</label>
+                            <label class="permission-item"><input type="checkbox" name="genres" value="true" @(role?.Genres == true ? null : "disabled")> Genres</label>
+                            <label class="permission-item"><input type="checkbox" name="users" value="true" @(role?.Users == true ? null : "disabled")> Users</label>
+                            <label class="permission-item"><input type="checkbox" name="roles" value="true" @(role?.Roles == true ? null : "disabled")> Roles</label>
+                            <label class="permission-item"><input type="checkbox" name="createNotes" value="true" @(role?.CreateNotes == true ? null : "disabled")> Create Notes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('addRoleModal').classList.remove('open')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editRoleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Role</h3>
+                <button class="modal-close" onclick="document.getElementById('editRoleModal').classList.remove('open')">&#10005;</button>
+            </div>
+            <form method="post" action="/Admin/EditRole">
+                <input type="hidden" name="id" id="editRoleId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Role Name *</label>
+                            <input type="text" name="name" id="editRoleName" class="form-input" maxlength="60" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" name="color" id="editRoleColor" class="form-input" value="#888888">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Permissions</label>
+                        <div class="permissions-grid">
+                            <label class="permission-item"><input type="checkbox" name="adminPanel" value="true" id="editRoleAdminPanel" @(role?.AdminPanel == true ? null : "disabled")> Admin Panel</label>
+                            <label class="permission-item"><input type="checkbox" name="products" value="true" id="editRoleProducts" @(role?.Products == true ? null : "disabled")> Products</label>
+                            <label class="permission-item"><input type="checkbox" name="slider" value="true" id="editRoleSlider" @(role?.Slider == true ? null : "disabled")> Slider</label>
+                            <label class="permission-item"><input type="checkbox" name="author" value="true" id="editRoleAuthor" @(role?.Author == true ? null : "disabled")> Authors</label>
+                            <label class="permission-item"><input type="checkbox" name="genres" value="true" id="editRoleGenres" @(role?.Genres == true ? null : "disabled")> Genres</label>
+                            <label class="permission-item"><input type="checkbox" name="users" value="true" id="editRoleUsers" @(role?.Users == true ? null : "disabled")> Users</label>
+                            <label class="permission-item"><input type="checkbox" name="roles" value="true" id="editRoleRoles" @(role?.Roles == true ? null : "disabled")> Roles</label>
+                            <label class="permission-item"><input type="checkbox" name="createNotes" value="true" id="editRoleCreateNotes" @(role?.CreateNotes == true ? null : "disabled")> Create Notes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="document.getElementById('editRoleModal').classList.remove('open')">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteRoleModal">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>Delete Role</h3>
+                <button class="modal-close" type="button" onclick="closeDeleteRoleModal()">&#10005;</button>
+            </div>
+            <div class="modal-body">
+                <p>This role will be removed from all users. Continue?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeDeleteRoleModal()">Cancel</button>
+                <button type="button" class="btn-danger" onclick="submitDeleteRole()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="~/admin/Script/admin_panel.js"></script>
+    <script>
+        let pendingDeleteRoleForm = null;
+
+        function closeRoleMenus() {
+            document.querySelectorAll('.user-dropdown').forEach(m => {
+                m.classList.remove('open', 'open-up', 'open-down');
+            });
+            document.querySelectorAll('#rolesTable tbody tr.role-menu-active').forEach(row => {
+                row.classList.remove('role-menu-active');
+            });
+        }
+
+        function toggleRoleMenu(id) {
+            const menu = document.getElementById('role-menu-' + id);
+            if (!menu) return;
+
+            const isOpen = menu.classList.contains('open');
+            closeRoleMenus();
+            if (isOpen) return;
+
+            const row = menu.closest('tr');
+            row?.classList.add('role-menu-active');
+            menu.classList.add('open');
+
+            const wrapper = menu.closest('.dropdown-wrapper');
+            const card = menu.closest('.card');
+            if (!wrapper || !card) {
+                menu.classList.add('open-up');
+                return;
+            }
+
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const cardRect = card.getBoundingClientRect();
+            const requiredHeight = menu.offsetHeight + 8;
+            const spaceAbove = wrapperRect.top - cardRect.top;
+            const spaceBelow = cardRect.bottom - wrapperRect.bottom;
+
+            if (spaceAbove < requiredHeight && spaceBelow > spaceAbove) {
+                menu.classList.add('open-down');
+            } else {
+                menu.classList.add('open-up');
+            }
+        }
+
+        function confirmRoleDelete(form) {
+            pendingDeleteRoleForm = form || null;
+            closeRoleMenus();
+            document.getElementById('deleteRoleModal')?.classList.add('open');
+            return false;
+        }
+
+        function closeDeleteRoleModal() {
+            document.getElementById('deleteRoleModal')?.classList.remove('open');
+            pendingDeleteRoleForm = null;
+        }
+
+        function submitDeleteRole() {
+            if (!pendingDeleteRoleForm) return;
+            const formToSubmit = pendingDeleteRoleForm;
+            pendingDeleteRoleForm = null;
+            document.getElementById('deleteRoleModal')?.classList.remove('open');
+            formToSubmit.submit();
+        }
+
+        function filterRoleUsersList() {
+            const q = (document.getElementById('roleUsersSearch')?.value || '').toLowerCase().trim();
+            document.querySelectorAll('#roleUsersList .manage-user-item').forEach(item => {
+                const haystack = (item.getAttribute('data-user-search') || '').toLowerCase();
+                item.style.display = haystack.includes(q) ? '' : 'none';
+            });
+        }
+
+        function highlightManagedRole(roleId) {
+            document.querySelectorAll('#roleUsersList .manage-role-item').forEach(label => {
+                label.style.background = '';
+                label.style.borderRadius = '';
+                label.style.padding = '';
+            });
+
+            document.querySelectorAll(`#roleUsersList .manage-role-item[data-role-id="${roleId}"]`).forEach(label => {
+                label.style.background = '#eef5e2';
+                label.style.borderRadius = '6px';
+                label.style.padding = '3px 6px';
+            });
+        }
+
+        function openRoleUsers(roleId, roleName) {
+            document.getElementById('roleUsersTitle').textContent = `Manage users for "${roleName}"`;
+            document.getElementById('roleUsersSearch').value = '';
+            filterRoleUsersList();
+            highlightManagedRole(roleId);
+
+            closeRoleMenus();
+            document.getElementById('roleUsersModal').classList.add('open');
+        }
+
+        function openRoleEditFromElement(el) {
+            if (!el) return;
+
+            document.getElementById('editRoleId').value = el.dataset.roleId || '';
+            document.getElementById('editRoleName').value = el.dataset.roleName || '';
+            document.getElementById('editRoleColor').value = el.dataset.roleColor || '#888888';
+
+            document.getElementById('editRoleAdminPanel').checked = el.dataset.roleAdminPanel === 'true';
+            document.getElementById('editRoleProducts').checked = el.dataset.roleProducts === 'true';
+            document.getElementById('editRoleSlider').checked = el.dataset.roleSlider === 'true';
+            document.getElementById('editRoleAuthor').checked = el.dataset.roleAuthor === 'true';
+            document.getElementById('editRoleGenres').checked = el.dataset.roleGenres === 'true';
+            document.getElementById('editRoleUsers').checked = el.dataset.roleUsers === 'true';
+            document.getElementById('editRoleRoles').checked = el.dataset.roleRoles === 'true';
+            document.getElementById('editRoleCreateNotes').checked = el.dataset.roleCreateNotes === 'true';
+
+            closeRoleMenus();
+            document.getElementById('editRoleModal').classList.add('open');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.actions-cell')) {
+                closeRoleMenus();
+            }
+
+            if (e.target === document.getElementById('deleteRoleModal')) {
+                closeDeleteRoleModal();
+            }
+        });
+
+        document.getElementById('roleSearch')?.addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('#rolesTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('roleUsersSearch')?.addEventListener('input', filterRoleUsersList);
+
+        function bindAdminPanelAutofill(modal) {
+            if (!modal) return;
+            const adminPanelCheckbox = modal.querySelector('input[name="adminPanel"]');
+            const sectionPermissionCheckboxes = modal.querySelectorAll('input[name="products"], input[name="slider"], input[name="author"], input[name="genres"], input[name="users"], input[name="roles"], input[name="createNotes"]');
+            sectionPermissionCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (cb.checked && adminPanelCheckbox) {
+                        adminPanelCheckbox.checked = true;
+                    }
+                });
+            });
+        }
+
+        bindAdminPanelAutofill(document.getElementById('addRoleModal'));
+        bindAdminPanelAutofill(document.getElementById('editRoleModal'));
+
+        document.querySelectorAll('#roleUsersList .manage-user-form.is-readonly').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

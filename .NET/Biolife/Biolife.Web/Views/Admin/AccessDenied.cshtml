@@ -1,0 +1,36 @@
+@model Biolife.Application.ViewModels.AccessDeniedVm
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/admin/CSS/admin_panel.css">
+    <script defer src="~/admin/Script/admin_panel.js"></script>
+</head>
+<body class="access-denied-page">
+    <div class="modal-overlay open access-denied-overlay">
+        <div class="modal modal-sm access-denied-modal">
+            <div class="modal-body access-denied-body">
+                <div class="access-denied-icon" aria-hidden="true">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h3>Access denied</h3>
+                <p class="access-denied-text">You do not have permission to open <strong>@Model.SectionName</strong>.</p>
+                <p class="access-denied-note">Access to this section is restricted by your role settings.</p>
+            </div>
+            <div class="modal-footer">
+                <a href="/Admin/Index" class="btn-secondary">Back to dashboard</a>
+                <a href="/" class="btn-primary">Go to site</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

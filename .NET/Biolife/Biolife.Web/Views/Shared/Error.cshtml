@@ -1,0 +1,259 @@
+@model ErrorViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Error";
+    var statusCode = ViewData["StatusCode"] as int?;
+    var errorTitle = statusCode == 404 ? "Page not found" : "Something went wrong";
+    var errorText = statusCode == 404
+        ? "This path wandered away from the garden. Play a quick harvest round, or head back home."
+        : "Something interrupted the page. Play a quick harvest round while we get you back on track.";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Error - Biolife</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/favicon.png" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Cairo", Arial, sans-serif;
+            color: #24312f;
+            background:
+                radial-gradient(circle at 18% 16%, rgba(242, 184, 75, 0.2), transparent 28%),
+                radial-gradient(circle at 82% 74%, rgba(5, 165, 3, 0.15), transparent 32%),
+                linear-gradient(120deg, rgba(255, 255, 255, 0.9), rgba(246, 251, 247, 0.88)),
+                url("/assets/images/home-01/bg_header-01.png") center top / cover no-repeat,
+                #f6fbf7;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(90deg, rgba(5, 165, 3, 0.055) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(5, 165, 3, 0.04) 1px, transparent 1px);
+            background-size: 42px 42px;
+        }
+
+        .error-shell {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 28px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-card {
+            width: min(100%, 560px);
+            border: 1px solid #d8e8e5;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 24px 70px rgba(5, 165, 3, 0.14);
+            overflow: hidden;
+        }
+
+        .error-card::before {
+            content: "";
+            display: block;
+            height: 5px;
+            background: linear-gradient(90deg, #047d02, #05a503, #7bd34f);
+        }
+
+        .error-content {
+            padding: 38px 36px 34px;
+            text-align: center;
+        }
+
+        .error-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-family: "Poppins", Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #24312f;
+        }
+
+        .error-brand img {
+            width: 42px;
+            height: auto;
+        }
+
+        .error-brand span {
+            color: #05a503;
+        }
+
+        .error-icon {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 18px;
+            border-radius: 8px;
+            background: rgba(5, 165, 3, 0.12);
+            color: #047d02;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-title {
+            margin: 0;
+            color: #24312f;
+            font-family: "Poppins", Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .error-text {
+            margin: 12px auto 0;
+            max-width: 420px;
+            color: #70827f;
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        .error-request {
+            margin: 18px auto 0;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #f8fcfb;
+            color: #70827f;
+            font-size: 13px;
+        }
+
+        .error-request code {
+            color: #047d02;
+            word-break: break-word;
+        }
+
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .error-btn {
+            min-height: 42px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .error-btn.primary {
+            background: linear-gradient(135deg, #05a503, #62c447);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(5, 165, 3, 0.22);
+        }
+
+        .error-btn.secondary {
+            border: 1px solid #d8e8e5;
+            background: #fff;
+            color: #24312f;
+        }
+
+        .error-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        @@media (max-width: 520px) {
+            .error-content {
+                padding: 30px 22px 28px;
+            }
+
+            .error-title {
+                font-size: 23px;
+            }
+
+            .error-btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="~/assets/css/error-game.css">
+</head>
+<body>
+    <main class="error-shell">
+        <section class="error-card" aria-labelledby="error-title">
+            <div class="error-content">
+                <div class="error-copy">
+                    <div class="error-brand">
+                        <img src="/assets/images/favicon.png" alt="">
+                        Bio<span>life</span>
+                    </div>
+
+                    <div class="error-icon" aria-hidden="true">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+
+                    <h1 class="error-title" id="error-title">
+                        @if (statusCode.HasValue && statusCode.Value > 0)
+                        {
+                            <span>@statusCode</span>
+                            <span> - </span>
+                        }
+                        @errorTitle
+                    </h1>
+                    <p class="error-text">@errorText</p>
+
+                    @if (Model.ShowRequestId)
+                    {
+                        <p class="error-request"><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
+                    }
+
+                    <div class="error-actions">
+                        <a class="error-btn primary" href="/">Go to home</a>
+                        <a class="error-btn secondary" href="/Account/Login">Sign in</a>
+                    </div>
+                </div>
+
+                <aside class="error-game" data-error-game aria-label="Mini game">
+                    <div class="error-game__header">
+                        <h2 class="error-game__title">Harvest rescue</h2>
+                        <div class="error-game__score">Score: <span data-game-score>0</span></div>
+                    </div>
+                    <div class="error-game__stage">
+                        <canvas class="error-game__canvas" data-game-canvas aria-label="Catch fresh products with the basket"></canvas>
+                        <div class="error-game__overlay" data-game-overlay>
+                            <div class="error-game__panel">
+                                <p class="error-game__message" data-game-message>Catch fresh products, avoid red error blocks, and score 180 points.</p>
+                                <button class="error-game__button" type="button" data-game-start>Start game</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="error-game__footer">
+                        <span><span class="error-game__key">A</span> <span class="error-game__key">D</span> or arrows</span>
+                        <span class="error-game__status" data-game-status>3 chances left</span>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+    <script src="~/assets/js/error-game.js"></script>
+</body>
+</html>

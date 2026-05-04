@@ -1,0 +1,49 @@
+@model EmailConfirmationVm
+@{
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="login-bg">
+    <div class="bg-shape bg-shape-1"></div>
+    <div class="bg-shape bg-shape-2"></div>
+</div>
+
+<div class="login-wrapper">
+    <div class="login-brand">
+        <span class="logo-text">Biolife<span>Panel</span></span>
+        <p class="brand-sub">Email confirmation</p>
+    </div>
+
+    <div class="login-card confirmation-card">
+        <div class="confirmation-content">
+            <div class="confirmation-icon @(Model.IsSuccess ? "is-success" : "is-error")">
+                @if (Model.IsSuccess)
+                {
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                }
+                else
+                {
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                }
+            </div>
+            <h2 class="login-title">@Model.Title</h2>
+            <p class="confirmation-message">@Model.Message</p>
+            <a asp-action="Login" class="btn-login confirmation-action">
+                <span class="btn-text">@Model.ActionText</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <p class="login-footer">Biolife &copy; 2026. All rights reserved.</p>
+</div>

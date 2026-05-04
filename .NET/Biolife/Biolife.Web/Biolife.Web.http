@@ -1,0 +1,6 @@
+@Biolife.Web_HostAddress = http://localhost:5274
+
+GET {{Biolife.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,12 @@
+global using Biolife.Application.Abstractions;
+global using Biolife.Domain.Entities;
+global using Biolife.Persistence.Contexts;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Authentication.Cookies;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Configuration;
+global using System.Net;
+global using System.Net.Mail;
+global using System.Security.Claims;
+global using System.Security.Cryptography;

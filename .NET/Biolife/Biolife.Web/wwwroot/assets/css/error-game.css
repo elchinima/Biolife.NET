@@ -1,0 +1,195 @@
+.error-shell {
+    align-items: flex-start;
+    padding-block: 36px;
+}
+
+.error-card {
+    width: min(100%, 1040px);
+}
+
+.error-content {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1.15fr);
+    gap: 30px;
+    align-items: center;
+    text-align: left;
+}
+
+.error-copy {
+    min-width: 0;
+}
+
+.error-brand {
+    margin-bottom: 28px;
+}
+
+.error-icon {
+    margin-inline: 0;
+}
+
+.error-text {
+    margin-inline: 0;
+}
+
+.error-actions {
+    justify-content: flex-start;
+}
+
+.error-game {
+    border: 1px solid #d8e8e5;
+    border-radius: 8px;
+    background: #f8fcfb;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    overflow: hidden;
+}
+
+.error-game__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 16px;
+    border-bottom: 1px solid #d8e8e5;
+    background: #fff;
+}
+
+.error-game__title {
+    margin: 0;
+    color: #24312f;
+    font-family: "Poppins", Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.error-game__score {
+    min-width: 92px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: rgba(5, 165, 3, 0.1);
+    color: #047d02;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.error-game__stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    min-height: 280px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(239, 249, 235, 0.92)),
+        url("/assets/images/404-bg.jpg") center / cover no-repeat;
+}
+
+.error-game__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+.error-game__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(248, 252, 251, 0.78);
+}
+
+.error-game__overlay[hidden] {
+    display: none;
+}
+
+.error-game__panel {
+    width: min(100%, 360px);
+    padding: 20px;
+    border: 1px solid #d8e8e5;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    box-shadow: 0 18px 45px rgba(5, 165, 3, 0.14);
+}
+
+.error-game__message {
+    margin: 0 0 14px;
+    color: #546966;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.error-game__button {
+    min-height: 40px;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #05a503, #62c447);
+    color: #fff;
+    font-family: "Cairo", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(5, 165, 3, 0.22);
+}
+
+.error-game__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 13px 16px 15px;
+    color: #70827f;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.error-game__key {
+    display: inline-flex;
+    min-width: 26px;
+    min-height: 24px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d8e8e5;
+    border-radius: 6px;
+    background: #fff;
+    color: #24312f;
+    font-weight: 700;
+}
+
+.error-game__status {
+    color: #047d02;
+    font-weight: 700;
+}
+
+@media (max-width: 840px) {
+    .error-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .error-icon,
+    .error-text {
+        margin-inline: auto;
+    }
+
+    .error-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .error-shell {
+        padding-block: 16px;
+    }
+
+    .error-game__header,
+    .error-game__footer {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .error-game__stage {
+        min-height: 240px;
+    }
+}
