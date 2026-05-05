@@ -51,7 +51,7 @@
                 </a>
             </div>
             <div class="mobile-block block-minicart">
-                <a class="link-to-cart" href="#">
+                <a class="link-to-cart" asp-controller="Cart" asp-action="Index">
                     <span class="fa fa-shopping-bag" aria-hidden="true"></span>
                     <span class="text">Cart</span>
                 </a>
@@ -235,6 +235,7 @@
     <script src="~/assets/js/biolife.framework.js"></script>
     <script src="~/assets/js/functions.js"></script>
     <script src="~/assets/js/user-profile.js"></script>
+    <script src="~/assets/js/cart.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 

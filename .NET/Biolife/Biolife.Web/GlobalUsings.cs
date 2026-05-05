@@ -16,5 +16,6 @@ global using SixLabors.ImageSharp.Processing;
 global using System.ComponentModel.DataAnnotations;
 global using System.Net.Mail;
 global using System.Security.Claims;
+global using System.Text.Json;
 global using System.Text.Encodings.Web;
 global using System.Text.RegularExpressions;

@@ -13,4 +13,6 @@ public class RegisterVm
     [DataType(DataType.Password)]
     [Compare(nameof(Password), ErrorMessage = "The passwords do not match.")]
     public string ConfirmPassword { get; set; } = null!;
+
+    public string? LocalCartJson { get; set; }
 }

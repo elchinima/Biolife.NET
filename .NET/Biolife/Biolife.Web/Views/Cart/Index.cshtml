@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<div class="page-contain bio-cart-page js-cart-page">
+    <div class="top-banner">
+        <div class="container">
+            <h1 class="title">Shopping Cart</h1>
+            <span class="subtitle">Fresh picks saved for your order</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="bio-cart-shell">
+            <section class="bio-cart-list">
+                <div class="bio-cart-heading">
+                    <div>
+                        <span class="bio-cart-kicker">Your basket</span>
+                        <h2>Products</h2>
+                    </div>
+                    <span class="js-cart-page-count">0 items</span>
+                </div>
+
+                <div class="js-cart-page-items"></div>
+            </section>
+
+            <aside class="bio-cart-summary">
+                <h2>Order summary</h2>
+                <div class="bio-cart-summary-line">
+                    <span>Subtotal</span>
+                    <strong class="js-cart-subtotal">$0.00</strong>
+                </div>
+                <div class="bio-cart-summary-line">
+                    <span>Delivery</span>
+                    <strong>Calculated later</strong>
+                </div>
+                <div class="bio-cart-total-line">
+                    <span>Total</span>
+                    <strong class="js-cart-total">$0.00</strong>
+                </div>
+                <a href="/" class="bio-cart-primary">Continue shopping</a>
+                <button type="button" class="bio-cart-secondary js-cart-clear">Clear cart</button>
+            </aside>
+        </div>
+    </div>
+</div>

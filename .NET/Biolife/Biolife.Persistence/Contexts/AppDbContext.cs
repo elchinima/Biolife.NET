@@ -10,6 +10,7 @@ namespace Biolife.Persistence.Contexts
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Session> Sessions { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
@@ -86,6 +87,25 @@ namespace Biolife.Persistence.Contexts
                 .WithMany(u => u.Sessions)
                 .HasForeignKey(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CartItem>()
+                .Property(c => c.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<CartItem>()
+                .HasIndex(c => new { c.UserId, c.ProductId });
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.CartItems)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CartItem>()
+                .HasOne(c => c.Product)
+                .WithMany(p => p.CartItems)
+                .HasForeignKey(c => c.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Note>()
                 .Property(n => n.Type)

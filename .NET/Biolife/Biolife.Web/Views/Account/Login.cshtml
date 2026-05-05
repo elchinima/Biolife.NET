@@ -152,4 +152,9 @@
         eyeClosed.style.display = isText ? 'none' : '';
     });
 
+    @if (TempData["ClearLocalCart"] is string)
+    {
+        <text>localStorage.removeItem('biolife.cart.v1');</text>
+    }
+
 </script>

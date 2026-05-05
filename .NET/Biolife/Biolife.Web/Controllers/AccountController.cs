@@ -2,6 +2,7 @@ public class AccountController : Controller
 {
     private readonly UserService _userService;
     private readonly IEmailSender _emailSender;
+    private readonly CartService _cartService;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
     private const long MaxProfilePhotoBytes = 5 * 1024 * 1024;
@@ -9,11 +10,13 @@ public class AccountController : Controller
     public AccountController(
         UserService userService,
         IEmailSender emailSender,
+        CartService cartService,
         IConfiguration configuration,
         IWebHostEnvironment environment)
     {
         _userService = userService;
         _emailSender = emailSender;
+        _cartService = cartService;
         _configuration = configuration;
         _environment = environment;
     }
@@ -191,7 +194,9 @@ public class AccountController : Controller
             return View(vm);
         }
 
-        var token = await _userService.CreateEmailConfirmationTokenAsync(user!.Id);
+        await SaveLocalCartForNewUserAsync(user!.Id, vm.LocalCartJson);
+
+        var token = await _userService.CreateEmailConfirmationTokenAsync(user.Id);
         var confirmationLink = Url.Action(
             nameof(ConfirmEmail),
             "Account",
@@ -221,6 +226,7 @@ public class AccountController : Controller
         }
 
         TempData["Success"] = "Registration successful. Please check your email and confirm your account.";
+        TempData["ClearLocalCart"] = "true";
         return RedirectToAction(nameof(Login));
     }
 
@@ -768,6 +774,25 @@ public class AccountController : Controller
     private void SetAuthViewData()
     {
         ViewBag.IsGoogleAuthConfigured = IsGoogleAuthConfigured();
+    }
+
+    private async Task SaveLocalCartForNewUserAsync(int userId, string? localCartJson)
+    {
+        if (string.IsNullOrWhiteSpace(localCartJson))
+            return;
+
+        try
+        {
+            var items = JsonSerializer.Deserialize<List<CartItemInputVm>>(
+                localCartJson,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            await _cartService.MergeAsync(userId, items);
+        }
+        catch (JsonException)
+        {
+            // A malformed guest cart must not block account creation.
+        }
     }
 
     private string GetSafeReturnUrl(string? returnUrl)

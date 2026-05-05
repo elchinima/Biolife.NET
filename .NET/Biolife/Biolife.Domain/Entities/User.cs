@@ -20,6 +20,7 @@ namespace Biolife.Domain.Entities
         public Role? Role { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public ICollection<Session> Sessions { get; set; } = new List<Session>();
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<Note> Notes { get; set; } = new List<Note>();
         public ICollection<EmailConfirmationToken> EmailConfirmationTokens { get; set; } = new List<EmailConfirmationToken>();
         public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();

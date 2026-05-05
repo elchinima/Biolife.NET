@@ -30,6 +30,7 @@
         </div>
 
         <form asp-action="Register" method="post" class="login-form" id="registerForm">
+            <input asp-for="LocalCartJson" type="hidden" id="localCartJson" />
             <div asp-validation-summary="ModelOnly" class="text-danger" style="font-size:12px; margin-bottom:4px;"></div>
 
             <div class="form-group">
@@ -182,5 +183,14 @@
 
     setupToggle('passwordToggle', 'input[name="Password"]');
     setupToggle('confirmPasswordToggle', 'input[name="ConfirmPassword"]');
+
+    const registerForm = document.getElementById('registerForm');
+    const localCartJson = document.getElementById('localCartJson');
+
+    if (registerForm && localCartJson) {
+        registerForm.addEventListener('submit', () => {
+            localCartJson.value = localStorage.getItem('biolife.cart.v1') || '[]';
+        });
+    }
 
 </script>

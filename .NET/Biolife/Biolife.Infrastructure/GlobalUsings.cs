@@ -1,4 +1,5 @@
 global using Biolife.Application.Abstractions;
+global using Biolife.Application.ViewModels;
 global using Biolife.Domain.Entities;
 global using Biolife.Persistence.Contexts;
 global using Microsoft.AspNetCore.Authentication;
