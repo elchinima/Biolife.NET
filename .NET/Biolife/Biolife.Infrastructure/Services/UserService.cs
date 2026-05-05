@@ -8,6 +8,9 @@ namespace Biolife.Infrastructure.Services
         public const int RememberMeLifetimeDays = 15;
         public const int MaxUserNameLength = 25;
         public const string MaxUserNameLengthError = "Max 25 characters.";
+        public const string TwoFactorPurposeLogin = "Login";
+        public const string TwoFactorPurposeEnable = "Enable";
+        public const string TwoFactorPurposeDisable = "Disable";
         private static DateTime BakuNow => DateTime.UtcNow.AddHours(4);
 
         private readonly AppDbContext _db;
@@ -147,6 +150,109 @@ namespace Biolife.Infrastructure.Services
                 u.EmailConfirmed);
         }
 
+        public async Task<User?> GetActiveUserByIdAsync(int userId)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u =>
+                u.Id == userId &&
+                u.IsActive &&
+                u.EmailConfirmed);
+        }
+
+        public async Task<(bool success, string error, User? user)> UpdateProfileAsync(
+            int userId,
+            string name)
+        {
+            name = name.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+                return (false, "Username is required.", null);
+
+            if (name.Length > MaxUserNameLength)
+                return (false, MaxUserNameLengthError, null);
+
+            var user = await GetActiveUserByIdAsync(userId);
+            if (user is null)
+                return (false, "Profile was not found.", null);
+
+            user.Name = name;
+
+            await _db.SaveChangesAsync();
+            return (true, string.Empty, user);
+        }
+
+        public async Task<(string code, User? user)> CreateTwoFactorTokenAsync(
+            int userId,
+            string purpose,
+            bool? pendingTwoFactorEnabled = null)
+        {
+            var user = await GetActiveUserByIdAsync(userId);
+            if (user is null)
+                return (string.Empty, null);
+
+            var now = DateTime.UtcNow;
+            var activeTokens = await _db.TwoFactorTokens
+                .Where(t => t.UserId == userId && t.Purpose == purpose && t.UsedAt == null)
+                .ToListAsync();
+
+            foreach (var activeToken in activeTokens)
+                activeToken.UsedAt = now;
+
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            _db.TwoFactorTokens.Add(new TwoFactorToken
+            {
+                UserId = userId,
+                CodeHash = HashTwoFactorCode(code),
+                Purpose = purpose,
+                PendingTwoFactorEnabled = pendingTwoFactorEnabled,
+                CreatedAt = now,
+                ExpiresAt = now.AddMinutes(10)
+            });
+
+            await _db.SaveChangesAsync();
+            return (code, user);
+        }
+
+        public async Task<User?> VerifyTwoFactorLoginAsync(int userId, string code)
+        {
+            return await VerifyTwoFactorTokenAsync(userId, code, TwoFactorPurposeLogin);
+        }
+
+        public async Task<(bool success, string error, User? user)> ConfirmTwoFactorSettingAsync(
+            int userId,
+            string code,
+            bool enabled)
+        {
+            var purpose = enabled ? TwoFactorPurposeEnable : TwoFactorPurposeDisable;
+            var user = await VerifyTwoFactorTokenAsync(userId, code, purpose, enabled);
+
+            if (user is null)
+                return (false, "Verification code is invalid or expired.", null);
+
+            user.TwoFactorEnabled = enabled;
+            await _db.SaveChangesAsync();
+
+            return (true, string.Empty, user);
+        }
+
+        public async Task<(bool success, string error, User? user)> UpdateProfileImageAsync(
+            int userId,
+            string profileImagePath)
+        {
+            profileImagePath = profileImagePath.Trim();
+
+            if (string.IsNullOrWhiteSpace(profileImagePath) || profileImagePath.Length > 260)
+                return (false, "Profile photo could not be saved.", null);
+
+            var user = await GetActiveUserByIdAsync(userId);
+            if (user is null)
+                return (false, "Profile was not found.", null);
+
+            user.ProfileImagePath = profileImagePath;
+
+            await _db.SaveChangesAsync();
+            return (true, string.Empty, user);
+        }
+
         public async Task<string> CreatePasswordResetTokenAsync(int userId)
         {
             var now = DateTime.UtcNow;
@@ -252,7 +358,10 @@ namespace Biolife.Infrastructure.Services
             if (session is null)
                 return null;
 
-            if (session.ExpiresAt <= DateTime.UtcNow || !session.User.IsActive || !session.User.EmailConfirmed)
+            if (session.ExpiresAt <= DateTime.UtcNow ||
+                !session.User.IsActive ||
+                !session.User.EmailConfirmed ||
+                session.User.TwoFactorEnabled)
             {
                 _db.Sessions.Remove(session);
                 await _db.SaveChangesAsync();
@@ -310,6 +419,44 @@ namespace Biolife.Infrastructure.Services
             return name.Length <= MaxUserNameLength
                 ? name
                 : name[..MaxUserNameLength];
+        }
+
+        private async Task<User?> VerifyTwoFactorTokenAsync(
+            int userId,
+            string code,
+            string purpose,
+            bool? pendingTwoFactorEnabled = null)
+        {
+            var now = DateTime.UtcNow;
+            var codeHash = HashTwoFactorCode(code.Trim());
+
+            var token = await _db.TwoFactorTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t =>
+                    t.UserId == userId &&
+                    t.CodeHash == codeHash &&
+                    t.Purpose == purpose &&
+                    t.UsedAt == null &&
+                    t.ExpiresAt > now &&
+                    t.User.IsActive &&
+                    t.User.EmailConfirmed);
+
+            if (token is null)
+                return null;
+
+            if (pendingTwoFactorEnabled.HasValue && token.PendingTwoFactorEnabled != pendingTwoFactorEnabled.Value)
+                return null;
+
+            token.UsedAt = now;
+            await _db.SaveChangesAsync();
+
+            return token.User;
+        }
+
+        private static string HashTwoFactorCode(string code)
+        {
+            var bytes = SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(code));
+            return Convert.ToHexString(bytes);
         }
     }
 }

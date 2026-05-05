@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="~/assets/css/slick.min.css">
     <link rel="stylesheet" href="~/assets/css/style.css">
     <link rel="stylesheet" href="~/assets/css/main-color01.css">
+    <link rel="stylesheet" href="~/assets/css/user-profile.css">
 </head>
 <body class="biolife-body">
 
@@ -34,6 +35,7 @@
 <partial name="_Header" />
 @RenderBody()
 <partial name="_Footer" />
+<partial name="_UserProfileModal" />
 <div class="mobile-footer">
         <div class="mobile-footer-inner">
             <div class="mobile-block block-menu-main">
@@ -73,7 +75,14 @@
             <div class="glb-item my-account">
                 <b class="title">My Account</b>
                 <ul class="list">
-                    <li class="list-item"><a href="#">Login/register</a></li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="list-item"><a href="javascript:void(0)" class="js-user-profile-modal">User Profile</a></li>
+                    }
+                    else
+                    {
+                        <li class="list-item"><a asp-controller="Account" asp-action="Login">Login/register</a></li>
+                    }
                     <li class="list-item"><a href="#">Wishlist <span class="index">(8)</span></a></li>
                     <li class="list-item"><a href="#">Checkout</a></li>
                 </ul>
@@ -225,6 +234,7 @@
     <script src="~/assets/js/slick.min.js"></script>
     <script src="~/assets/js/biolife.framework.js"></script>
     <script src="~/assets/js/functions.js"></script>
+    <script src="~/assets/js/user-profile.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 

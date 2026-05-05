@@ -13,6 +13,9 @@ namespace Biolife.Domain.Entities
         public bool EmailConfirmed { get; set; } = true;
         public string UniqueKey { get; set; } = null!;
         public DateTime? LastLogin { get; set; }
+        [MaxLength(260)]
+        public string? ProfileImagePath { get; set; }
+        public bool TwoFactorEnabled { get; set; }
         public int? RoleId { get; set; }
         public Role? Role { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
@@ -20,5 +23,6 @@ namespace Biolife.Domain.Entities
         public ICollection<Note> Notes { get; set; } = new List<Note>();
         public ICollection<EmailConfirmationToken> EmailConfirmationTokens { get; set; } = new List<EmailConfirmationToken>();
         public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+        public ICollection<TwoFactorToken> TwoFactorTokens { get; set; } = new List<TwoFactorToken>();
     }
 }

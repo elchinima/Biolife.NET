@@ -13,6 +13,7 @@ namespace Biolife.Persistence.Contexts
         public DbSet<Note> Notes { get; set; }
         public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<TwoFactorToken> TwoFactorTokens { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -127,6 +128,23 @@ namespace Biolife.Persistence.Contexts
             modelBuilder.Entity<PasswordResetToken>()
                 .HasOne(t => t.User)
                 .WithMany(u => u.PasswordResetTokens)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TwoFactorToken>()
+                .Property(t => t.CodeHash)
+                .HasMaxLength(64);
+
+            modelBuilder.Entity<TwoFactorToken>()
+                .Property(t => t.Purpose)
+                .HasMaxLength(32);
+
+            modelBuilder.Entity<TwoFactorToken>()
+                .HasIndex(t => new { t.UserId, t.Purpose, t.ExpiresAt });
+
+            modelBuilder.Entity<TwoFactorToken>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.TwoFactorTokens)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

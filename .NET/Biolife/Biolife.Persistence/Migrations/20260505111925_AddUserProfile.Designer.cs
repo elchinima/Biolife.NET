@@ -4,6 +4,7 @@ using Biolife.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biolife.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260505111925_AddUserProfile")]
+    partial class AddUserProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -353,46 +356,6 @@ namespace Biolife.Persistence.Migrations
                     b.ToTable("Sessions");
                 });
 
-            modelBuilder.Entity("Biolife.Domain.Entities.TwoFactorToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CodeHash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("PendingTwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Purpose")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "Purpose", "ExpiresAt");
-
-                    b.ToTable("TwoFactorTokens");
-                });
-
             modelBuilder.Entity("Biolife.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -531,17 +494,6 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Biolife.Domain.Entities.TwoFactorToken", b =>
-                {
-                    b.HasOne("Biolife.Domain.Entities.User", "User")
-                        .WithMany("TwoFactorTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Biolife.Domain.Entities.User", b =>
                 {
                     b.HasOne("Biolife.Domain.Entities.Role", "Role")
@@ -597,8 +549,6 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("PasswordResetTokens");
 
                     b.Navigation("Sessions");
-
-                    b.Navigation("TwoFactorTokens");
 
                     b.Navigation("UserRoles");
                 });

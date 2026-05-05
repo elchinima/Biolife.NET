@@ -21,7 +21,14 @@
                                 <option value="usd">¥ JPY (Yen)</option>
                             </select>
                         </li>
-                        <li><a href="login.html" class="login-link"><i class="biolife-icon icon-login"></i>My Account</a></li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li><a href="javascript:void(0)" class="login-link js-user-profile-modal"><i class="biolife-icon icon-login"></i>My Account</a></li>
+                        }
+                        else
+                        {
+                            <li><a asp-controller="Account" asp-action="Login" class="login-link"><i class="biolife-icon icon-login"></i>My Account</a></li>
+                        }
                     </ul>
                 </div>
             </div>

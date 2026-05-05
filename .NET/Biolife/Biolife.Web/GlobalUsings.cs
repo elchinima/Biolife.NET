@@ -12,6 +12,7 @@ global using Microsoft.EntityFrameworkCore;
 global using SixLabors.ImageSharp;
 global using SixLabors.ImageSharp.Formats;
 global using SixLabors.ImageSharp.Formats.Webp;
+global using SixLabors.ImageSharp.Processing;
 global using System.ComponentModel.DataAnnotations;
 global using System.Net.Mail;
 global using System.Security.Claims;

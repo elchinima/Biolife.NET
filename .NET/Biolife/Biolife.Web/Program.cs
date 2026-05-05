@@ -66,7 +66,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
-app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
