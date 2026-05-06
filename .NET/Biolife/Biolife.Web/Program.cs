@@ -1,4 +1,4 @@
-using Biolife.Application.Abstractions;
+﻿using Biolife.Application.Abstractions;
 using Biolife.Infrastructure.Services;
 using Biolife.Persistence.Contexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,6 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 var authenticationBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -79,3 +80,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+

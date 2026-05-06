@@ -22,7 +22,7 @@ namespace Biolife.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Biolife.Domain.Entities.Author", b =>
+            modelBuilder.Entity("Biolife.Domain.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace Biolife.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Biolife.Domain.Entities.Carousel", b =>
@@ -218,6 +218,111 @@ namespace Biolife.Persistence.Migrations
                     b.ToTable("Notes");
                 });
 
+            modelBuilder.Entity("Biolife.Domain.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddressLine1")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Biolife.Domain.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("Biolife.Domain.Entities.PasswordResetToken", b =>
                 {
                     b.Property<int>("Id")
@@ -261,7 +366,7 @@ namespace Biolife.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("TagId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("CostPrice")
@@ -307,7 +412,7 @@ namespace Biolife.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("TagId");
 
                     b.HasIndex("GenreId");
 
@@ -325,7 +430,7 @@ namespace Biolife.Persistence.Migrations
                     b.Property<bool>("AdminPanel")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Author")
+                    b.Property<bool>("Tag")
                         .HasColumnType("bit");
 
                     b.Property<string>("Color")
@@ -343,6 +448,9 @@ namespace Biolife.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("Orders")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("Products")
                         .HasColumnType("bit");
@@ -449,6 +557,22 @@ namespace Biolife.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("AddressLine1")
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(120)
@@ -459,6 +583,10 @@ namespace Biolife.Persistence.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
 
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("datetime2");
@@ -471,6 +599,10 @@ namespace Biolife.Persistence.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("ProfileImagePath")
                         .HasMaxLength(260)
@@ -553,6 +685,35 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("CreatedByUser");
                 });
 
+            modelBuilder.Entity("Biolife.Domain.Entities.Order", b =>
+                {
+                    b.HasOne("Biolife.Domain.Entities.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Biolife.Domain.Entities.OrderItem", b =>
+                {
+                    b.HasOne("Biolife.Domain.Entities.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Biolife.Domain.Entities.Product", "Product")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Biolife.Domain.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("Biolife.Domain.Entities.User", "User")
@@ -566,9 +727,9 @@ namespace Biolife.Persistence.Migrations
 
             modelBuilder.Entity("Biolife.Domain.Entities.Product", b =>
                 {
-                    b.HasOne("Biolife.Domain.Entities.Author", "Author")
+                    b.HasOne("Biolife.Domain.Entities.Tag", "Tag")
                         .WithMany("Products")
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -578,7 +739,7 @@ namespace Biolife.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Author");
+                    b.Navigation("Tag");
 
                     b.Navigation("Genre");
                 });
@@ -634,7 +795,7 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Biolife.Domain.Entities.Author", b =>
+            modelBuilder.Entity("Biolife.Domain.Entities.Tag", b =>
                 {
                     b.Navigation("Products");
                 });
@@ -644,9 +805,16 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("Biolife.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("Biolife.Domain.Entities.Product", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("Biolife.Domain.Entities.Role", b =>
@@ -664,6 +832,8 @@ namespace Biolife.Persistence.Migrations
 
                     b.Navigation("Notes");
 
+                    b.Navigation("Orders");
+
                     b.Navigation("PasswordResetTokens");
 
                     b.Navigation("Sessions");
@@ -676,3 +846,4 @@ namespace Biolife.Persistence.Migrations
         }
     }
 }
+

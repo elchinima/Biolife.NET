@@ -1,4 +1,4 @@
-namespace Biolife.Web.Controllers
+﻿namespace Biolife.Web.Controllers
 {
     [Authorize]
     public class AdminController : Controller
@@ -13,6 +13,7 @@ namespace Biolife.Web.Controllers
             Quality = 75,
             Method = WebpEncodingMethod.Default
         };
+        private static readonly string[] OrderStatuses = ["Pending", "Processing", "Shipped", "Completed", "Cancelled"];
 
         public AdminController(AppDbContext db, IWebHostEnvironment env)
         {
@@ -41,11 +42,12 @@ namespace Biolife.Web.Controllers
                 AdminPanel = assignedRoles.Any(r => r.AdminPanel),
                 Products = assignedRoles.Any(r => r.Products),
                 Slider = assignedRoles.Any(r => r.Slider),
-                Author = assignedRoles.Any(r => r.Author),
+                Tag = assignedRoles.Any(r => r.Tag),
                 Genres = assignedRoles.Any(r => r.Genres),
                 Users = assignedRoles.Any(r => r.Users),
                 Roles = assignedRoles.Any(r => r.Roles),
-                CreateNotes = assignedRoles.Any(r => r.CreateNotes)
+                CreateNotes = assignedRoles.Any(r => r.CreateNotes),
+                Orders = assignedRoles.Any(r => r.Orders)
             };
         }
 
@@ -164,13 +166,14 @@ namespace Biolife.Web.Controllers
             ref bool adminPanel,
             bool products,
             bool slider,
-            bool author,
+            bool tag,
             bool genres,
             bool users,
             bool roles,
-            bool createNotes)
+            bool createNotes,
+            bool orders)
         {
-            var hasSectionPermission = products || slider || author || genres || users || roles || createNotes;
+            var hasSectionPermission = products || slider || tag || genres || users || roles || createNotes || orders;
             if (hasSectionPermission)
                 adminPanel = true;
         }
@@ -180,22 +183,24 @@ namespace Biolife.Web.Controllers
             ref bool adminPanel,
             ref bool products,
             ref bool slider,
-            ref bool author,
+            ref bool tag,
             ref bool genres,
             ref bool users,
             ref bool roles,
-            ref bool createNotes)
+            ref bool createNotes,
+            ref bool orders)
         {
             adminPanel = adminPanel && actorRole.AdminPanel;
             products = products && actorRole.Products;
             slider = slider && actorRole.Slider;
-            author = author && actorRole.Author;
+            tag = tag && actorRole.Tag;
             genres = genres && actorRole.Genres;
             users = users && actorRole.Users;
             roles = roles && actorRole.Roles;
             createNotes = createNotes && actorRole.CreateNotes;
+            orders = orders && actorRole.Orders;
 
-            EnsureAdminPanelForSectionPermissions(ref adminPanel, products, slider, author, genres, users, roles, createNotes);
+            EnsureAdminPanelForSectionPermissions(ref adminPanel, products, slider, tag, genres, users, roles, createNotes, orders);
         }
 
         private static void ApplyEditableRolePermissionsFromActor(
@@ -204,39 +209,43 @@ namespace Biolife.Web.Controllers
             bool adminPanel,
             bool products,
             bool slider,
-            bool author,
+            bool tag,
             bool genres,
             bool users,
             bool roles,
-            bool createNotes)
+            bool createNotes,
+            bool orders)
         {
             var nextAdminPanel = actorRole.AdminPanel ? adminPanel : targetRole.AdminPanel;
             var nextProducts = actorRole.Products ? products : targetRole.Products;
             var nextSlider = actorRole.Slider ? slider : targetRole.Slider;
-            var nextAuthor = actorRole.Author ? author : targetRole.Author;
+            var nextTag = actorRole.Tag ? tag : targetRole.Tag;
             var nextGenres = actorRole.Genres ? genres : targetRole.Genres;
             var nextUsers = actorRole.Users ? users : targetRole.Users;
             var nextRoles = actorRole.Roles ? roles : targetRole.Roles;
             var nextCreateNotes = actorRole.CreateNotes ? createNotes : targetRole.CreateNotes;
+            var nextOrders = actorRole.Orders ? orders : targetRole.Orders;
 
             EnsureAdminPanelForSectionPermissions(
                 ref nextAdminPanel,
                 nextProducts,
                 nextSlider,
-                nextAuthor,
+                nextTag,
                 nextGenres,
                 nextUsers,
                 nextRoles,
-                nextCreateNotes);
+                nextCreateNotes,
+                nextOrders);
 
             targetRole.AdminPanel = nextAdminPanel;
             targetRole.Products = nextProducts;
             targetRole.Slider = nextSlider;
-            targetRole.Author = nextAuthor;
+            targetRole.Tag = nextTag;
             targetRole.Genres = nextGenres;
             targetRole.Users = nextUsers;
             targetRole.Roles = nextRoles;
             targetRole.CreateNotes = nextCreateNotes;
+            targetRole.Orders = nextOrders;
         }
 
         private IActionResult BuildAccessDeniedResult(string sectionName)
@@ -269,9 +278,9 @@ namespace Biolife.Web.Controllers
         {
             return new AdminVm
             {
-                Products = _db.Products.Include(p => p.Author).Include(p => p.Genre)
+                Products = _db.Products.Include(p => p.Tag).Include(p => p.Genre)
                              .OrderByDescending(p => p.CreatedAt).ToList(),
-                Authors = _db.Authors.ToList(),
+                Tags = _db.Tags.ToList(),
                 Genres = _db.Genres.ToList()
             };
         }
@@ -317,7 +326,7 @@ namespace Biolife.Web.Controllers
 
         private void NormalizeProductModelStateForOptionalFields()
         {
-            ModelState.Remove(nameof(Product.Author));
+            ModelState.Remove(nameof(Product.Tag));
             ModelState.Remove(nameof(Product.Genre));
             ModelState.Remove(nameof(Product.ImageUrl));
             ModelState.Remove(nameof(Product.CostPrice));
@@ -400,10 +409,12 @@ namespace Biolife.Web.Controllers
             var vm = new AdminVm
             {
                 TotalProducts = _db.Products.Count(),
-                TotalAuthors = _db.Authors.Count(),
+                TotalTags = _db.Tags.Count(),
                 TotalGenres = _db.Genres.Count(),
                 TotalCarousels = _db.Carousels.Count(),
-                TotalRevenue = _db.Products.Any() ? _db.Products.Sum(p => p.Price) : 0,
+                TotalOrders = _db.Orders.Count(),
+                TotalUsers = _db.Users.Count(),
+                TotalRevenue = _db.Orders.Any() ? _db.Orders.Sum(o => o.Subtotal) : 0,
                 Users = _db.Users
                     .Include(u => u.Role)
                     .Include(u => u.UserRoles)
@@ -413,6 +424,48 @@ namespace Biolife.Web.Controllers
                 CurrentUserRole = role
             };
             return View(vm);
+        }
+
+        public IActionResult Orders()
+        {
+            var role = GetCurrentUserRole();
+            var guard = RequirePermission(role, r => r.Orders, "Orders");
+            if (guard != null) return guard;
+
+            var vm = new AdminVm
+            {
+                Orders = _db.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.Items)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToList(),
+                TotalOrders = _db.Orders.Count(),
+                TotalRevenue = _db.Orders.Any() ? _db.Orders.Sum(o => o.Subtotal) : 0,
+                CurrentUserRole = role
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateOrderStatus(int id, string status)
+        {
+            var role = GetCurrentUserRole();
+            var guard = RequirePermission(role, r => r.Orders, "Orders");
+            if (guard != null) return guard;
+
+            status = (status ?? string.Empty).Trim();
+            if (!OrderStatuses.Contains(status, StringComparer.OrdinalIgnoreCase))
+                return RedirectToAction("Orders");
+
+            var order = _db.Orders.Find(id);
+            if (order == null)
+                return NotFound();
+
+            order.Status = OrderStatuses.First(s => s.Equals(status, StringComparison.OrdinalIgnoreCase));
+            _db.SaveChanges();
+
+            return RedirectToAction("Orders");
         }
 
         public IActionResult Products()
@@ -440,15 +493,15 @@ namespace Biolife.Web.Controllers
             return View(vm);
         }
 
-        public IActionResult Authors()
+        public IActionResult Tags()
         {
             var role = GetCurrentUserRole();
-            var guard = RequirePermission(role, r => r.Author, "Authors");
+            var guard = RequirePermission(role, r => r.Tag, "Tags");
             if (guard != null) return guard;
 
             var vm = new AdminVm
             {
-                Authors = _db.Authors.Include(a => a.Products).ToList(),
+                Tags = _db.Tags.Include(a => a.Products).ToList(),
                 CurrentUserRole = role
             };
             return View(vm);
@@ -539,11 +592,12 @@ namespace Biolife.Web.Controllers
             bool adminPanel,
             bool products,
             bool slider,
-            bool author,
+            bool tag,
             bool genres,
             bool users,
             bool roles,
-            bool createNotes)
+            bool createNotes,
+            bool orders)
         {
             var currentRole = GetCurrentUserRole();
             var guard = RequirePermission(currentRole, r => r.Roles, "Roles");
@@ -562,11 +616,12 @@ namespace Biolife.Web.Controllers
                 ref adminPanel,
                 ref products,
                 ref slider,
-                ref author,
+                ref tag,
                 ref genres,
                 ref users,
                 ref roles,
-                ref createNotes);
+                ref createNotes,
+                ref orders);
 
             var nextOrder = (_db.Roles.Max(r => (int?)r.SortOrder) ?? 0) + 1;
             var newRole = new Role
@@ -577,11 +632,12 @@ namespace Biolife.Web.Controllers
                 AdminPanel = adminPanel,
                 Products = products,
                 Slider = slider,
-                Author = author,
+                Tag = tag,
                 Genres = genres,
                 Users = users,
                 Roles = roles,
-                CreateNotes = createNotes
+                CreateNotes = createNotes,
+                Orders = orders
             };
 
             _db.Roles.Add(newRole);
@@ -598,11 +654,12 @@ namespace Biolife.Web.Controllers
             bool adminPanel,
             bool products,
             bool slider,
-            bool author,
+            bool tag,
             bool genres,
             bool users,
             bool roles,
-            bool createNotes)
+            bool createNotes,
+            bool orders)
         {
             var currentRole = GetCurrentUserRole();
             var guard = RequirePermission(currentRole, r => r.Roles, "Roles");
@@ -633,11 +690,12 @@ namespace Biolife.Web.Controllers
                 adminPanel,
                 products,
                 slider,
-                author,
+                tag,
                 genres,
                 users,
                 roles,
-                createNotes);
+                createNotes,
+                orders);
 
             _db.SaveChanges();
 
@@ -1114,7 +1172,7 @@ namespace Biolife.Web.Controllers
             product.Price = model.Price;
             product.CostPrice = model.CostPrice;
             product.DiscountPercent = model.DiscountPercent;
-            product.AuthorId = model.AuthorId;
+            product.TagId = model.TagId;
             product.GenreId = model.GenreId;
             product.IsFeatured = model.IsFeatured;
             product.IsNew = model.IsNew;
@@ -1279,39 +1337,39 @@ namespace Biolife.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateAuthor(string name)
+        public IActionResult CreateTag(string name)
         {
             var role = GetCurrentUserRole();
-            var guard = RequirePermission(role, r => r.Author, "Authors");
+            var guard = RequirePermission(role, r => r.Tag, "Tags");
             if (guard != null) return guard;
 
-            _db.Authors.Add(new Author { Name = name });
+            _db.Tags.Add(new Tag { Name = name });
             _db.SaveChanges();
-            return RedirectToAction("Authors");
+            return RedirectToAction("Tags");
         }
 
         [HttpPost]
-        public IActionResult UpdateAuthor(int id, string name)
+        public IActionResult UpdateTag(int id, string name)
         {
             var role = GetCurrentUserRole();
-            var guard = RequirePermission(role, r => r.Author, "Authors");
+            var guard = RequirePermission(role, r => r.Tag, "Tags");
             if (guard != null) return guard;
 
-            var author = _db.Authors.Find(id);
-            if (author != null) { author.Name = name; _db.SaveChanges(); }
-            return RedirectToAction("Authors");
+            var tag = _db.Tags.Find(id);
+            if (tag != null) { tag.Name = name; _db.SaveChanges(); }
+            return RedirectToAction("Tags");
         }
 
         [HttpPost]
-        public IActionResult DeleteAuthor(int id)
+        public IActionResult DeleteTag(int id)
         {
             var role = GetCurrentUserRole();
-            var guard = RequirePermission(role, r => r.Author, "Authors");
+            var guard = RequirePermission(role, r => r.Tag, "Tags");
             if (guard != null) return guard;
 
-            var author = _db.Authors.Find(id);
-            if (author != null) { _db.Authors.Remove(author); _db.SaveChanges(); }
-            return RedirectToAction("Authors");
+            var tag = _db.Tags.Find(id);
+            if (tag != null) { _db.Tags.Remove(tag); _db.SaveChanges(); }
+            return RedirectToAction("Tags");
         }
 
         [HttpPost]
@@ -1351,3 +1409,5 @@ namespace Biolife.Web.Controllers
         }
     }
 }
+
+

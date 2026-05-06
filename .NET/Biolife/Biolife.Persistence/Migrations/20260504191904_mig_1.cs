@@ -12,7 +12,7 @@ namespace Biolife.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Authors",
+                name: "Tags",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -23,7 +23,7 @@ namespace Biolife.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Authors", x => x.Id);
+                    table.PrimaryKey("PK_Tags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,7 +71,7 @@ namespace Biolife.Persistence.Migrations
                     AdminPanel = table.Column<bool>(type: "bit", nullable: false),
                     Products = table.Column<bool>(type: "bit", nullable: false),
                     Slider = table.Column<bool>(type: "bit", nullable: false),
-                    Author = table.Column<bool>(type: "bit", nullable: false),
+                    Tag = table.Column<bool>(type: "bit", nullable: false),
                     Genres = table.Column<bool>(type: "bit", nullable: false),
                     Users = table.Column<bool>(type: "bit", nullable: false),
                     Roles = table.Column<bool>(type: "bit", nullable: false),
@@ -101,15 +101,15 @@ namespace Biolife.Persistence.Migrations
                     SaleEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     GenreId = table.Column<int>(type: "int", nullable: false),
-                    AuthorId = table.Column<int>(type: "int", nullable: false)
+                    TagId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Authors_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Authors",
+                        name: "FK_Products_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -291,9 +291,9 @@ namespace Biolife.Persistence.Migrations
                 columns: new[] { "UserId", "ExpiresAt" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_AuthorId",
+                name: "IX_Products_TagId",
                 table: "Products",
-                column: "AuthorId");
+                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_GenreId",
@@ -358,7 +358,7 @@ namespace Biolife.Persistence.Migrations
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "Authors");
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Genres");
@@ -371,3 +371,4 @@ namespace Biolife.Persistence.Migrations
         }
     }
 }
+

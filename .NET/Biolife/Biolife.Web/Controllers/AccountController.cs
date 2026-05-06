@@ -1,4 +1,4 @@
-public class AccountController : Controller
+﻿public class AccountController : Controller
 {
     private readonly UserService _userService;
     private readonly IEmailSender _emailSender;
@@ -372,13 +372,27 @@ public class AccountController : Controller
             name = user.Name,
             email = user.Email,
             profileImagePath = user.ProfileImagePath,
+            fullName = user.FullName,
+            phoneNumber = user.PhoneNumber,
+            addressLine1 = user.AddressLine1,
+            addressLine2 = user.AddressLine2,
+            country = user.Country,
+            city = user.City,
             twoFactorEnabled = user.TwoFactorEnabled
         });
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Profile(string name, bool twoFactorEnabled)
+    public async Task<IActionResult> Profile(
+        string name,
+        string? fullName,
+        string? phoneNumber,
+        string? addressLine1,
+        string? addressLine2,
+        string? country,
+        string? city,
+        bool twoFactorEnabled)
     {
         var userId = GetCurrentUserId();
         if (userId is null)
@@ -388,7 +402,15 @@ public class AccountController : Controller
         if (currentUser is null)
             return NotFound(new { message = "Profile was not found." });
 
-        var (success, error, user) = await _userService.UpdateProfileAsync(userId.Value, name);
+        var (success, error, user) = await _userService.UpdateProfileAsync(
+            userId.Value,
+            name,
+            fullName,
+            phoneNumber,
+            addressLine1,
+            addressLine2,
+            country,
+            city);
         if (!success || user is null)
             return BadRequest(new { message = error });
 
@@ -411,6 +433,12 @@ public class AccountController : Controller
                 name = user.Name,
                 email = user.Email,
                 profileImagePath = user.ProfileImagePath,
+                fullName = user.FullName,
+                phoneNumber = user.PhoneNumber,
+                addressLine1 = user.AddressLine1,
+                addressLine2 = user.AddressLine2,
+                country = user.Country,
+                city = user.City,
                 twoFactorEnabled = currentUser.TwoFactorEnabled
             });
         }
@@ -421,6 +449,12 @@ public class AccountController : Controller
             name = user.Name,
             email = user.Email,
             profileImagePath = user.ProfileImagePath,
+            fullName = user.FullName,
+            phoneNumber = user.PhoneNumber,
+            addressLine1 = user.AddressLine1,
+            addressLine2 = user.AddressLine2,
+            country = user.Country,
+            city = user.City,
             twoFactorEnabled = user.TwoFactorEnabled
         });
     }
@@ -448,6 +482,12 @@ public class AccountController : Controller
             name = user.Name,
             email = user.Email,
             profileImagePath = user.ProfileImagePath,
+            fullName = user.FullName,
+            phoneNumber = user.PhoneNumber,
+            addressLine1 = user.AddressLine1,
+            addressLine2 = user.AddressLine2,
+            country = user.Country,
+            city = user.City,
             twoFactorEnabled = user.TwoFactorEnabled
         });
     }
@@ -930,3 +970,5 @@ public class AccountController : Controller
             """;
     }
 }
+
+

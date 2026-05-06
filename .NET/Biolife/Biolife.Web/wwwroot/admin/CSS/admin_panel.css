@@ -340,6 +340,15 @@ body {
     justify-content: center;
     font-size: 14px;
     font-weight: 700;
+    overflow: hidden;
+    flex: 0 0 34px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 
 
@@ -820,6 +829,216 @@ body.page-leaving .content {
 .status-danger {
     background: #f8d7da;
     color: #721c24;
+}
+
+.status-pending {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.orders-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.orders-table td {
+    vertical-align: top;
+}
+
+.orders-table tbody tr {
+    cursor: pointer;
+}
+
+.orders-table {
+    table-layout: fixed;
+}
+
+.order-col-id {
+    width: 72px;
+}
+
+.order-col-customer {
+    width: 15%;
+}
+
+.order-col-contacts {
+    width: 17%;
+}
+
+.order-col-address {
+    width: 17%;
+}
+
+.order-col-items {
+    width: 20%;
+}
+
+.order-col-total {
+    width: 120px;
+}
+
+.order-col-created {
+    width: 150px;
+}
+
+.order-col-status {
+    width: 150px;
+}
+
+.order-id-cell {
+    color: #aaa;
+}
+
+.order-truncate-cell {
+    min-width: 0;
+    cursor: pointer;
+}
+
+.order-line {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.order-total-cell,
+.order-created-cell {
+    white-space: nowrap;
+}
+
+.order-muted {
+    display: block;
+    margin-top: 4px;
+    color: #8f9a83;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.order-items-list {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.order-items-list span {
+    overflow: hidden;
+    color: #485140;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.order-status-form {
+    margin: 0;
+}
+
+.orders-table-card {
+    overflow: hidden;
+}
+
+.orders-table {
+    border-spacing: 0;
+}
+
+.orders-table tbody tr {
+    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.orders-table tbody tr:hover {
+    background: #fbfff5;
+    box-shadow: inset 4px 0 0 var(--bio-green);
+}
+
+.orders-table tbody tr:focus-visible {
+    outline: 2px solid var(--bio-green);
+    outline-offset: -2px;
+}
+
+.order-id-cell {
+    font-weight: 800;
+}
+
+.order-total-cell strong {
+    color: var(--bio-ink);
+    font-size: 14px;
+}
+
+.status-select {
+    min-width: 124px;
+    border: 1px solid transparent;
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, currentColor 50%),
+        linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+        calc(100% - 15px) 50%,
+        calc(100% - 10px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 26px;
+}
+
+.status-select:focus {
+    border-color: rgba(5, 165, 3, 0.32);
+    box-shadow: 0 0 0 4px rgba(5, 165, 3, 0.12);
+}
+
+.row-details-modal {
+    max-width: 760px;
+}
+
+.row-details-modal .modal-header {
+    min-height: 78px;
+}
+
+.row-details-modal .modal-body {
+    padding: 0;
+    background:
+        linear-gradient(180deg, #fff, #fbfff7);
+}
+
+.row-details-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--bio-line);
+}
+
+.row-detail-item {
+    min-width: 0;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.row-detail-label {
+    margin-bottom: 7px;
+    color: var(--bio-muted);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.row-detail-value {
+    min-width: 0;
+    color: var(--bio-ink);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.row-detail-value strong {
+    font-weight: 800;
+}
+
+.row-detail-value .order-muted,
+.row-detail-value span {
+    white-space: normal;
+}
+
+.row-detail-value .status-select {
+    pointer-events: none;
 }
 
 

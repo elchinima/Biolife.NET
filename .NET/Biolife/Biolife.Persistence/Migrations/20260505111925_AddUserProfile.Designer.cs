@@ -25,7 +25,7 @@ namespace Biolife.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Biolife.Domain.Entities.Author", b =>
+            modelBuilder.Entity("Biolife.Domain.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,7 +45,7 @@ namespace Biolife.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Biolife.Domain.Entities.Carousel", b =>
@@ -219,7 +219,7 @@ namespace Biolife.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AuthorId")
+                    b.Property<int>("TagId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("CostPrice")
@@ -265,7 +265,7 @@ namespace Biolife.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("TagId");
 
                     b.HasIndex("GenreId");
 
@@ -283,7 +283,7 @@ namespace Biolife.Persistence.Migrations
                     b.Property<bool>("AdminPanel")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Author")
+                    b.Property<bool>("Tag")
                         .HasColumnType("bit");
 
                     b.Property<string>("Color")
@@ -466,9 +466,9 @@ namespace Biolife.Persistence.Migrations
 
             modelBuilder.Entity("Biolife.Domain.Entities.Product", b =>
                 {
-                    b.HasOne("Biolife.Domain.Entities.Author", "Author")
+                    b.HasOne("Biolife.Domain.Entities.Tag", "Tag")
                         .WithMany("Products")
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -478,7 +478,7 @@ namespace Biolife.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Author");
+                    b.Navigation("Tag");
 
                     b.Navigation("Genre");
                 });
@@ -523,7 +523,7 @@ namespace Biolife.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Biolife.Domain.Entities.Author", b =>
+            modelBuilder.Entity("Biolife.Domain.Entities.Tag", b =>
                 {
                     b.Navigation("Products");
                 });
@@ -556,3 +556,4 @@ namespace Biolife.Persistence.Migrations
         }
     }
 }
+

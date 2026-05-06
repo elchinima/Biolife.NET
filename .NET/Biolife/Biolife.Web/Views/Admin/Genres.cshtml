@@ -1,4 +1,4 @@
-@model Biolife.Application.ViewModels.AdminVm
+﻿@model Biolife.Application.ViewModels.AdminVm
 @{
     Layout = null;
     var role = Model.CurrentUserRole;
@@ -15,11 +15,12 @@
 </head>
 <body data-can-products="@(role?.Products == true ? "true" : "false")"
       data-can-slider="@(role?.Slider == true ? "true" : "false")"
-      data-can-authors="@(role?.Author == true ? "true" : "false")"
+      data-can-tags="@(role?.Tag == true ? "true" : "false")"
       data-can-genres="@(role?.Genres == true ? "true" : "false")"
       data-can-users="@(role?.Users == true ? "true" : "false")"
       data-can-roles="@(role?.Roles == true ? "true" : "false")"
-      data-can-create-notes="@(role?.CreateNotes == true ? "true" : "false")">
+      data-can-create-notes="@(role?.CreateNotes == true ? "true" : "false")"
+      data-can-orders="@(role?.Orders == true ? "true" : "false")">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo"><span class="logo-text">Admin<span>Panel</span></span></div>
         <nav class="sidebar-nav">
@@ -35,9 +36,9 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" /><polyline points="16 2 12 7 8 2" /></svg>
                 <span>Slider</span>
             </a>
-            <a href="/Admin/Authors" class="nav-item">
+            <a href="/Admin/Tags" class="nav-item">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" /></svg>
-                <span>Authors</span>
+                <span>Tags</span>
             </a>
             <a href="/Admin/Genres" class="nav-item active">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></svg>
@@ -66,6 +67,10 @@
                     <path d="M8 16h5" />
                 </svg>
                 <span>Notes</span>
+            </a>
+            <a href="/Admin/Orders" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                <span>Orders</span>
             </a>
         </nav>
         <div class="sidebar-footer">
@@ -191,5 +196,6 @@
     </script>
 </body>
 </html>
+
 
 

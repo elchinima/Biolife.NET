@@ -1,16 +1,18 @@
-namespace Biolife.Persistence.Contexts
+﻿namespace Biolife.Persistence.Contexts
 {
     public class AppDbContext : DbContext
     {
         public DbSet<Carousel> Carousels { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Author> Authors { get; set; }
+        public DbSet<Tag> Tags { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<EmailConfirmationToken> EmailConfirmationTokens { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
@@ -35,9 +37,9 @@ namespace Biolife.Persistence.Contexts
                 .HasColumnType("decimal(5,2)");
 
             modelBuilder.Entity<Product>()
-                .HasOne(p => p.Author)
+                .HasOne(p => p.Tag)
                 .WithMany(a => a.Products)
-                .HasForeignKey(p => p.AuthorId)
+                .HasForeignKey(p => p.TagId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Product>()
@@ -107,6 +109,40 @@ namespace Biolife.Persistence.Contexts
                 .HasForeignKey(c => c.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Subtotal)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Status)
+                .HasMaxLength(30);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(o => o.UnitPrice)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<OrderItem>()
+                .Property(o => o.LineTotal)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(o => o.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(o => o.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(o => o.Product)
+                .WithMany(p => p.OrderItems)
+                .HasForeignKey(o => o.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<Note>()
                 .Property(n => n.Type)
                 .HasConversion<int>();
@@ -170,3 +206,4 @@ namespace Biolife.Persistence.Contexts
         }
     }
 }
+

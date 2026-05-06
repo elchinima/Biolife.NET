@@ -1,4 +1,4 @@
-namespace Biolife.Domain.Entities
+﻿namespace Biolife.Domain.Entities
 {
     public class Product
     {
@@ -24,9 +24,11 @@ namespace Biolife.Domain.Entities
         public int GenreId { get; set; }
         public Genre Genre { get; set; } = null!;
 
-        public int AuthorId { get; set; }
-        public Author Author { get; set; } = null!;
+        public int TagId { get; set; }
+        public Tag Tag { get; set; } = null!;
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }
+

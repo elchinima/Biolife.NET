@@ -1,4 +1,4 @@
-;(function () {
+﻿;(function () {
     'use strict';
 
     const storageKey = 'biolife.cart.v1';
@@ -123,7 +123,15 @@
             throw new Error('Unauthorized');
         }
 
-        if (!response.ok) throw new Error(`Cart request failed: ${response.status}`);
+        if (!response.ok) {
+            let message = `Cart request failed: ${response.status}`;
+            try {
+                const data = await response.clone().json();
+                if (data && data.message) message = data.message;
+            } catch {
+            }
+            throw new Error(message);
+        }
         return response.json();
     };
 
@@ -132,6 +140,29 @@
         state.isAuthenticated = isAuthenticated;
         if (!state.isAuthenticated) writeLocal(state.items);
         render();
+    };
+
+    const setCheckoutStatus = (message, type = 'success') => {
+        bySelector('.js-cart-checkout-status').forEach((node) => {
+            node.textContent = message || '';
+            node.className = `bio-cart-checkout-status js-cart-checkout-status${message ? ' is-visible' : ''}${type === 'error' ? ' is-error' : ' is-success'}`;
+        });
+    };
+
+    const setButtonBusy = (button, busy, text) => {
+        if (!button) return;
+        if (busy) {
+            button.dataset.originalText = button.textContent;
+            button.textContent = text;
+            button.disabled = true;
+            return;
+        }
+
+        if (button.dataset.originalText) {
+            button.textContent = button.dataset.originalText;
+            delete button.dataset.originalText;
+        }
+        button.disabled = false;
     };
 
     const totals = () => {
@@ -294,6 +325,31 @@
         setItems([], false);
     };
 
+    const checkout = async (button) => {
+        if (!state.items.length) {
+            setCheckoutStatus('Your cart is empty.', 'error');
+            return;
+        }
+
+        if (!state.isAuthenticated) {
+            setCheckoutStatus('Please sign in and complete your profile before placing an order.', 'error');
+            return;
+        }
+
+        setButtonBusy(button, true, 'Placing order...');
+        setCheckoutStatus('', 'success');
+
+        try {
+            const result = await api('/Cart/Checkout', { method: 'POST', body: '{}' });
+            setItems(result.items, true);
+            setCheckoutStatus(result.message || 'Order placed successfully.', 'success');
+        } catch (error) {
+            setCheckoutStatus(error.message || 'Could not place the order.', 'error');
+        } finally {
+            setButtonBusy(button, false);
+        }
+    };
+
     const init = async () => {
         const localItems = readLocal();
 
@@ -351,6 +407,13 @@
         if (clearButton) {
             event.preventDefault();
             clearCart();
+            return;
+        }
+
+        const checkoutButton = event.target.closest('.js-cart-checkout');
+        if (checkoutButton) {
+            event.preventDefault();
+            checkout(checkoutButton);
         }
     });
 
@@ -364,3 +427,5 @@
 
     document.addEventListener('DOMContentLoaded', init);
 })();
+
+

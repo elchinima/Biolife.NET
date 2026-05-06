@@ -1,6 +1,6 @@
-namespace Biolife.Domain.Entities
+﻿namespace Biolife.Domain.Entities
 {
-    public class Author
+    public class Tag
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
@@ -10,3 +10,4 @@ namespace Biolife.Domain.Entities
         public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }
+

@@ -160,9 +160,21 @@ namespace Biolife.Infrastructure.Services
 
         public async Task<(bool success, string error, User? user)> UpdateProfileAsync(
             int userId,
-            string name)
+            string name,
+            string? fullName,
+            string? phoneNumber,
+            string? addressLine1,
+            string? addressLine2,
+            string? country,
+            string? city)
         {
             name = name.Trim();
+            fullName = NormalizeOptional(fullName);
+            phoneNumber = NormalizeOptional(phoneNumber);
+            addressLine1 = NormalizeOptional(addressLine1);
+            addressLine2 = NormalizeOptional(addressLine2);
+            country = NormalizeOptional(country);
+            city = NormalizeOptional(city);
 
             if (string.IsNullOrWhiteSpace(name))
                 return (false, "Username is required.", null);
@@ -170,13 +182,47 @@ namespace Biolife.Infrastructure.Services
             if (name.Length > MaxUserNameLength)
                 return (false, MaxUserNameLengthError, null);
 
+            if (fullName?.Length > 120)
+                return (false, "Full name must be 120 characters or fewer.", null);
+
+            if (phoneNumber?.Length > 30)
+                return (false, "Phone number must be 30 characters or fewer.", null);
+
+            if (addressLine1?.Length > 180 || addressLine2?.Length > 180)
+                return (false, "Address lines must be 180 characters or fewer.", null);
+
+            if (country?.Length > 80)
+                return (false, "Country must be 80 characters or fewer.", null);
+
+            if (city?.Length > 80)
+                return (false, "City must be 80 characters or fewer.", null);
+
             var user = await GetActiveUserByIdAsync(userId);
             if (user is null)
                 return (false, "Profile was not found.", null);
 
             user.Name = name;
+            user.FullName = fullName;
+            user.PhoneNumber = phoneNumber;
+            user.AddressLine1 = addressLine1;
+            user.AddressLine2 = addressLine2;
+            user.Country = country;
+            user.City = city;
 
             await _db.SaveChangesAsync();
+            return (true, string.Empty, user);
+        }
+
+        public async Task<(bool success, string error, User? user)> ValidateCheckoutProfileAsync(int userId)
+        {
+            var user = await GetActiveUserByIdAsync(userId);
+            if (user is null)
+                return (false, "Profile was not found.", null);
+
+            var missingFields = GetMissingCheckoutFields(user).ToList();
+            if (missingFields.Count > 0)
+                return (false, $"Please complete your profile before placing an order: {string.Join(", ", missingFields)}.", user);
+
             return (true, string.Empty, user);
         }
 
@@ -419,6 +465,28 @@ namespace Biolife.Infrastructure.Services
             return name.Length <= MaxUserNameLength
                 ? name
                 : name[..MaxUserNameLength];
+        }
+
+        private static string? NormalizeOptional(string? value)
+        {
+            value = value?.Trim();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
+        private static IEnumerable<string> GetMissingCheckoutFields(User user)
+        {
+            if (string.IsNullOrWhiteSpace(user.FullName))
+                yield return "Full name";
+            if (string.IsNullOrWhiteSpace(user.Email))
+                yield return "Email address";
+            if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+                yield return "Phone number";
+            if (string.IsNullOrWhiteSpace(user.AddressLine1))
+                yield return "Address line 1";
+            if (string.IsNullOrWhiteSpace(user.Country))
+                yield return "Country";
+            if (string.IsNullOrWhiteSpace(user.City))
+                yield return "City";
         }
 
         private async Task<User?> VerifyTwoFactorTokenAsync(

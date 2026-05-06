@@ -11,6 +11,12 @@
     var form = document.getElementById("user-profile-form");
     var nameInput = document.getElementById("profile-name");
     var emailInput = document.getElementById("profile-email");
+    var fullNameInput = document.getElementById("profile-full-name");
+    var phoneNumberInput = document.getElementById("profile-phone-number");
+    var addressLine1Input = document.getElementById("profile-address-line-1");
+    var addressLine2Input = document.getElementById("profile-address-line-2");
+    var countryInput = document.getElementById("profile-country");
+    var cityInput = document.getElementById("profile-city");
     var twoFactorInput = document.getElementById("profile-two-factor");
     var twoFactorConfirmPanel = document.getElementById("profile-two-factor-confirm");
     var twoFactorCodeInput = document.getElementById("profile-two-factor-code");
@@ -72,6 +78,12 @@
 
         nameInput.value = data.name || "";
         emailInput.value = data.email || "";
+        fullNameInput.value = data.fullName || "";
+        phoneNumberInput.value = data.phoneNumber || "";
+        addressLine1Input.value = data.addressLine1 || "";
+        addressLine2Input.value = data.addressLine2 || "";
+        countryInput.value = data.country || "";
+        cityInput.value = data.city || "";
         twoFactorInput.checked = !!data.twoFactorEnabled;
         pendingTwoFactorEnabled = null;
         twoFactorConfirmPanel.hidden = true;
@@ -277,6 +289,12 @@
         var submitButton = modal.querySelector(".user-profile-modal-footer .user-profile-primary-btn");
         var formData = new FormData();
         formData.append("name", nameInput.value);
+        formData.append("fullName", fullNameInput.value);
+        formData.append("phoneNumber", phoneNumberInput.value);
+        formData.append("addressLine1", addressLine1Input.value);
+        formData.append("addressLine2", addressLine2Input.value);
+        formData.append("country", countryInput.value);
+        formData.append("city", cityInput.value);
         formData.append("twoFactorEnabled", twoFactorInput.checked ? "true" : "false");
 
         setButtonBusy(submitButton, true, "Saving...");

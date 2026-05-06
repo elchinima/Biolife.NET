@@ -191,6 +191,63 @@
         color: #777;
     }
 
+    .orders-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .orders-table tbody tr {
+        grid-template-columns: minmax(0, 1fr) minmax(112px, auto);
+        align-items: center;
+        min-height: 88px;
+    }
+
+    .orders-table tbody td {
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+
+    .orders-table tbody td:nth-child(1),
+    .orders-table tbody td:nth-child(2),
+    .orders-table tbody td:nth-child(3),
+    .orders-table tbody td:nth-child(6),
+    .orders-table tbody td:nth-child(8) {
+        display: block;
+    }
+
+    .orders-table tbody td:nth-child(1),
+    .orders-table tbody td:nth-child(2),
+    .orders-table tbody td:nth-child(3),
+    .orders-table tbody td:nth-child(6) {
+        grid-column: 1;
+    }
+
+    .orders-table tbody td:nth-child(6) {
+        font-size: 13px;
+        color: #485140;
+    }
+
+    .orders-table tbody td:nth-child(8) {
+        grid-column: 2;
+        grid-row: 1 / span 4;
+        align-self: center;
+        justify-self: end;
+        max-width: 128px;
+    }
+
+    .orders-table tbody td:last-child {
+        grid-row: auto;
+    }
+
+    .orders-table .order-line,
+    .orders-table .order-muted {
+        max-width: min(100%, calc(100vw - 190px));
+    }
+
+    .orders-table .status-select {
+        width: 128px;
+        max-width: 128px;
+    }
+
     .data-table tbody td:last-child,
     .mini-table tbody td:last-child {
         display: flex;
@@ -212,6 +269,15 @@
     .mini-table tbody td:not(:last-child) {
         text-overflow: ellipsis;
         overflow: hidden;
+    }
+
+    .orders-table tbody td:last-child {
+        display: block;
+        grid-column: 2;
+        grid-row: 1 / span 4;
+        align-self: center;
+        justify-self: end;
+        max-width: 128px;
     }
 
     .mobile-row-hint {

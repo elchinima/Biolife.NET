@@ -1,7 +1,7 @@
-/*
+﻿/*
 ----------------------------------------------------
 * Template Name    : Biolife - Organic Food        *
-* Author           : Kutetheme                     *
+* Tag           : Kutetheme                     *
 * Version          : 1.0.0                         *
 * Created          : August 2019                   *
 * File Description : Main CSS file of the template *
@@ -3715,7 +3715,7 @@ body.open-overlay #overlay{
     font-size: 0;
     line-height: 1;
 }
-.wgt-twitter-item .author,
+.wgt-twitter-item .tag,
 .wgt-twitter-item .detail,
 .wgt-post-item .detail,
 .wgt-post-item .thumb{
@@ -3751,7 +3751,7 @@ body.open-overlay #overlay{
 .wgt-post-item .detail .post-archive .comment{
     margin-left: 17px;
 }
-.wgt-twitter-item .author{
+.wgt-twitter-item .tag{
     width: 38px;
 }
 .wgt-twitter-item .detail .account-info{
@@ -4786,13 +4786,13 @@ body.open-overlay #overlay{
     display: inline-block;
     float: right;
 }
-.review-tab #comments .comment-content .author{
+.review-tab #comments .comment-content .tag{
     font-size: 16px;
     line-height: 1;
     color: #666666;
     margin: 2px 0 25px;
 }
-.review-tab #comments .comment-content .author b{
+.review-tab #comments .comment-content .tag b{
     color: #333333;
     font-weight: 600;
 }
@@ -6198,8 +6198,8 @@ body.open-overlay #overlay{
     font-weight: 600;
     color: #222222;
 }
-.post-item .post-content .post-archive .author,
-.single-post-contain .post-head .post-archive .author{
+.post-item .post-content .post-archive .tag,
+.single-post-contain .post-head .post-archive .tag{
     margin-left: 6px;
 }
 .single-post-contain .post-content{
@@ -6403,7 +6403,7 @@ body.open-overlay #overlay{
     padding: 39px 13px 11px 84px;
     height: 188px;
 }
-.post-comments .comment-form .form-row .current-author{
+.post-comments .comment-form .form-row .current-tag{
     font-size: 0;
     line-height: 0;
     display: inline-block;
@@ -6454,13 +6454,13 @@ body.open-overlay #overlay{
     display: block;
     list-style: none;
 }
-.post-comments  .wrap-post-comment .author-contact{
+.post-comments  .wrap-post-comment .tag-contact{
     font-size: 15px;
     font-weight: 700;
     color: #333333;
     line-height: 30px;
 }
-.post-comments  .wrap-post-comment .author-contact img{
+.post-comments  .wrap-post-comment .tag-contact img{
     margin-right: 6px;
     display: inline-block;
     float: left;
@@ -8868,7 +8868,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     line-height: 24px;
     font-size: 15px;
 }
-.style-bottom-info.layout-02 .post-meta__item.author{
+.style-bottom-info.layout-02 .post-meta__item.tag{
     color: #222222;
     font-weight: 600;
     margin-right: 36px;
@@ -8881,7 +8881,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     vertical-align: inherit;
     margin-right: 8px;
 }
-.style-bottom-info.layout-02 .post-meta__item.author img{
+.style-bottom-info.layout-02 .post-meta__item.tag img{
     display: inline-block;
     font-size: 0;
     line-height: 0;
@@ -8986,7 +8986,7 @@ li.slick-current .slider-opt04__layout01 .buttons .btn{
     text-align: right;
     margin-top: 21px;
 }
-.style-bottom-info.layout-02.align-left .post-meta__item.author{
+.style-bottom-info.layout-02.align-left .post-meta__item.tag{
     float: left;
 }
 .style-bottom-info.layout-02.align-left .post-meta__item-social-box .inner-content{
@@ -11694,7 +11694,7 @@ body.open-quickview-block .biolife-quickview-block{
         padding: 55px 10px 10px 15px;
         height: 220px;
     }
-    .post-comments .comment-form .form-row .current-author{
+    .post-comments .comment-form .form-row .current-tag{
         top: 10px;
         left: 10px;
     }
@@ -12656,7 +12656,7 @@ body.open-quickview-block .biolife-quickview-block{
         min-width: 120px;
         margin-left: 15px;
     }
-    .single-post-contain .post-head .post-archive .author{
+    .single-post-contain .post-head .post-archive .tag{
         display: block;
         margin-left: 0;
     }
@@ -13101,7 +13101,7 @@ body.open-quickview-block .biolife-quickview-block{
     .payment-methods.layout-02 .payments li:not(:last-child){
         margin-right: 0;
     }
-    .post-item .post-content .post-archive .author{
+    .post-item .post-content .post-archive .tag{
         margin-left: 0;
         display: block;
     }
@@ -14750,6 +14750,7 @@ body.open-quickview-block .biolife-quickview-block{
 .bio-cart-primary{
     color: #ffffff;
     background: #05a503;
+    margin-top: 14px;
 }
 .bio-cart-primary:hover{
     color: #ffffff;
@@ -14763,6 +14764,32 @@ body.open-quickview-block .biolife-quickview-block{
 .bio-cart-secondary:hover{
     color: #ffffff;
     background: #444444;
+}
+.bio-cart-checkout-status{
+    display: none;
+    margin: 4px 0 2px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+.bio-cart-checkout-status.is-visible{
+    display: block;
+}
+.bio-cart-checkout-status.is-success{
+    background: #eff9e9;
+    border: 1px solid #cfe9c4;
+    color: #426913;
+}
+.bio-cart-checkout-status.is-error{
+    background: #fff2ef;
+    border: 1px solid #f0c7bd;
+    color: #ad3d24;
+}
+.bio-cart-primary[disabled],
+.bio-cart-secondary[disabled]{
+    cursor: wait;
+    opacity: 0.72;
 }
 .bio-cart-empty{
     text-align: center;
@@ -14833,3 +14860,4 @@ body.open-quickview-block .biolife-quickview-block{
         grid-row: 1 / 2;
     }
 }
+

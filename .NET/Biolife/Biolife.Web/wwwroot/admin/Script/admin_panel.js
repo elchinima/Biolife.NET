@@ -2,14 +2,16 @@ const adminLanguageStorageKey = 'adminPanelLanguage';
 const adminLanguages = ['az', 'en', 'ru'];
 const adminLanguageLabels = { az: 'Az', en: 'En', ru: 'Ru' };
 const adminLanguageLocales = { az: 'az-AZ', en: 'en-US', ru: 'ru-RU' };
-const adminTranslations = {
+const adminTranslations = { az: {}, en: {}, ru: {} };
+
+const adminTranslationOverrides = {
     az: {
         'Language': 'Dil',
         'Dashboard': 'Panel',
         'Products': 'Məhsullar',
         'Books / Products': 'Kitablar / Məhsullar',
         'Slider': 'Slayder',
-        'Authors': 'Müəlliflər',
+        'Tags': 'Teqlər',
         'Genres': 'Janrlar',
         'Users': 'İstifadəçilər',
         'Roles': 'Rollar',
@@ -33,7 +35,7 @@ const adminTranslations = {
         'Registered': 'Qeydiyyat',
         'Last Login': 'Son giriş',
         'Status': 'Status',
-        'Author': 'Müəllif',
+        'Tag': 'Teq',
         'Genre': 'Janr',
         'Price': 'Qiymət',
         'Featured': 'Seçilmiş',
@@ -48,11 +50,10 @@ const adminTranslations = {
         'No': 'Xeyr',
         'Never': 'Heç vaxt',
         'No role': 'Rol yoxdur',
-        'Admin Panel': 'Admin Panel',
         'Create Notes': 'Qeyd yaratma',
         'Search product...': 'Məhsul axtar...',
         'Search genre...': 'Janr axtar...',
-        'Search author...': 'Müəllif axtar...',
+        'Search tag...': 'Teq axtar...',
         'Search users...': 'İstifadəçi axtar...',
         'Search role...': 'Rol axtar...',
         'Search note...': 'Qeyd axtar...',
@@ -60,7 +61,7 @@ const adminTranslations = {
         'All Status': 'Bütün statuslar',
         '+ Add Product': '+ Məhsul əlavə et',
         '+ Add Genre': '+ Janr əlavə et',
-        '+ Add Author': '+ Müəllif əlavə et',
+        '+ Add Tag': '+ Teq əlavə et',
         '+ Add Role': '+ Rol əlavə et',
         '+ Add Note': '+ Qeyd əlavə et',
         '+ Add Slide': '+ Slayd əlavə et',
@@ -68,8 +69,8 @@ const adminTranslations = {
         'Edit Product': 'Məhsulu redaktə et',
         'Add Genre': 'Janr əlavə et',
         'Edit Genre': 'Janrı redaktə et',
-        'Add Author': 'Müəllif əlavə et',
-        'Edit Author': 'Müəllifi redaktə et',
+        'Add Tag': 'Teq əlavə et',
+        'Edit Tag': 'Teqi redaktə et',
         'Add Role': 'Rol əlavə et',
         'Edit Role': 'Rolu redaktə et',
         'Add Note': 'Qeyd əlavə et',
@@ -101,7 +102,6 @@ const adminTranslations = {
         'Upload Image': 'Şəkil yüklə',
         'Upload cover image': 'Üzlük şəklini yüklə',
         'Upload hover image': 'Hover şəklini yüklə',
-        'Active': 'Aktiv',
         'New': 'Yeni',
         'New Arrival': 'Yeni gələn',
         'Normal': 'Normal',
@@ -116,7 +116,7 @@ const adminTranslations = {
         'Confirm Deletion': 'Silməni təsdiqlə',
         'Are you sure you want to delete this product?': 'Bu məhsulu silmək istədiyinizə əminsiniz?',
         'Are you sure you want to delete this genre?': 'Bu janrı silmək istədiyinizə əminsiniz?',
-        'Are you sure you want to delete this author?': 'Bu müəllifi silmək istədiyinizə əminsiniz?',
+        'Are you sure you want to delete this tag?': 'Bu teqi silmək istədiyinizə əminsiniz?',
         'Are you sure you want to delete this slide?': 'Bu slaydı silmək istədiyinizə əminsiniz?',
         'Access denied': 'Giriş qadağandır',
         'You do not have permission to open this section.': 'Bu bölməni açmaq üçün icazəniz yoxdur.',
@@ -129,7 +129,6 @@ const adminTranslations = {
         'Unpin navbar': 'Menyunu sabitdən çıxar',
         'Clear selected file': 'Seçilmiş faylı təmizlə',
         'Only JPG, PNG and GIF images are allowed.': 'Yalnız JPG, PNG və GIF şəkillərinə icazə verilir.',
-        'Actions': 'Əməliyyatlar',
         'Change Name': 'Adı dəyiş',
         'Block': 'Blokla',
         'Unblock': 'Blokdan çıxar',
@@ -141,23 +140,37 @@ const adminTranslations = {
         'Note': 'Qeyd',
         'Unknown': 'Naməlum',
         'Move Up': 'Yuxarı daşı',
-        'Move Down': 'Aşağı daşı'
+        'Move Down': 'Aşağı daşı',
+        'Orders': 'Sifarişlər',
+        'All time': 'Bütün dövr',
+        'Completed and active orders': 'Tamamlanmış və aktiv sifarişlər',
+        'Search orders...': 'Sifariş axtar...',
+        'Customer': 'Müştəri',
+        'Contacts': 'Əlaqə',
+        'Address': 'Ünvan',
+        'Items': 'Məhsullar',
+        'Total': 'Cəmi',
+        'Created': 'Yaradıldı',
+        'Pending': 'Gözləyir',
+        'Processing': 'İşlənir',
+        'Shipped': 'Göndərildi',
+        'Completed': 'Tamamlandı',
+        'Cancelled': 'Ləğv edildi'
     },
-    en: {},
     ru: {
         'Language': 'Язык',
         'Dashboard': 'Панель',
         'Products': 'Товары',
-        'Books / Products': 'Книги / Товары',
+        'Books / Products': 'Книги / товары',
         'Slider': 'Слайдер',
-        'Authors': 'Авторы',
+        'Tags': 'Теги',
         'Genres': 'Жанры',
         'Users': 'Пользователи',
         'Roles': 'Роли',
         'Notes': 'Заметки',
         'Logout': 'Выход',
         'Exit to site': 'На сайт',
-        'Admin Panel': 'Админ панель',
+        'Admin Panel': 'Админ-панель',
         'Total Orders': 'Всего заказов',
         'Revenue': 'Доход',
         'Books in Catalog': 'Книг в каталоге',
@@ -174,7 +187,7 @@ const adminTranslations = {
         'Registered': 'Регистрация',
         'Last Login': 'Последний вход',
         'Status': 'Статус',
-        'Author': 'Автор',
+        'Tag': 'Тег',
         'Genre': 'Жанр',
         'Price': 'Цена',
         'Featured': 'Избранное',
@@ -192,7 +205,7 @@ const adminTranslations = {
         'Create Notes': 'Создание заметок',
         'Search product...': 'Поиск товара...',
         'Search genre...': 'Поиск жанра...',
-        'Search author...': 'Поиск автора...',
+        'Search tag...': 'Поиск тега...',
         'Search users...': 'Поиск пользователей...',
         'Search role...': 'Поиск роли...',
         'Search note...': 'Поиск заметки...',
@@ -200,7 +213,7 @@ const adminTranslations = {
         'All Status': 'Все статусы',
         '+ Add Product': '+ Добавить товар',
         '+ Add Genre': '+ Добавить жанр',
-        '+ Add Author': '+ Добавить автора',
+        '+ Add Tag': '+ Добавить тег',
         '+ Add Role': '+ Добавить роль',
         '+ Add Note': '+ Добавить заметку',
         '+ Add Slide': '+ Добавить слайд',
@@ -208,8 +221,8 @@ const adminTranslations = {
         'Edit Product': 'Редактировать товар',
         'Add Genre': 'Добавить жанр',
         'Edit Genre': 'Редактировать жанр',
-        'Add Author': 'Добавить автора',
-        'Edit Author': 'Редактировать автора',
+        'Add Tag': 'Добавить тег',
+        'Edit Tag': 'Редактировать тег',
         'Add Role': 'Добавить роль',
         'Edit Role': 'Редактировать роль',
         'Add Note': 'Добавить заметку',
@@ -255,7 +268,7 @@ const adminTranslations = {
         'Confirm Deletion': 'Подтверждение удаления',
         'Are you sure you want to delete this product?': 'Вы уверены, что хотите удалить этот товар?',
         'Are you sure you want to delete this genre?': 'Вы уверены, что хотите удалить этот жанр?',
-        'Are you sure you want to delete this author?': 'Вы уверены, что хотите удалить этого автора?',
+        'Are you sure you want to delete this tag?': 'Вы уверены, что хотите удалить этот тег?',
         'Are you sure you want to delete this slide?': 'Вы уверены, что хотите удалить этот слайд?',
         'Access denied': 'Доступ запрещён',
         'You do not have permission to open this section.': 'У вас нет прав для открытия этого раздела.',
@@ -279,12 +292,31 @@ const adminTranslations = {
         'Note': 'Заметка',
         'Unknown': 'Неизвестно',
         'Move Up': 'Вверх',
-        'Move Down': 'Вниз'
+        'Move Down': 'Вниз',
+        'Orders': 'Заказы',
+        'All time': 'За всё время',
+        'Completed and active orders': 'Завершённые и активные заказы',
+        'Search orders...': 'Поиск заказов...',
+        'Customer': 'Клиент',
+        'Contacts': 'Контакты',
+        'Address': 'Адрес',
+        'Items': 'Товары',
+        'Total': 'Итого',
+        'Created': 'Создан',
+        'Pending': 'Ожидает',
+        'Processing': 'В обработке',
+        'Shipped': 'Отправлен',
+        'Completed': 'Завершён',
+        'Cancelled': 'Отменён'
     }
 };
 
-adminTranslations.en = Object.keys({ ...adminTranslations.az, ...adminTranslations.ru })
-    .reduce((items, key) => ({ ...items, [key]: key }), {});
+Object.entries(adminTranslationOverrides).forEach(([language, translations]) => {
+    Object.assign(adminTranslations[language], translations);
+    Object.keys(translations).forEach(key => {
+        adminTranslations.en[key] = key;
+    });
+});
 
 const adminTextSources = new WeakMap();
 const adminAttributeSources = new WeakMap();
@@ -1150,6 +1182,12 @@ function sanitizeDetailValue(cell) {
     const clone = cell.cloneNode(true);
     clone.querySelectorAll('script').forEach(node => node.remove());
     clone.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+    clone.querySelectorAll('.order-line, .order-muted').forEach(node => {
+        node.classList.remove('order-line');
+        node.style.whiteSpace = 'normal';
+        node.style.overflow = 'visible';
+        node.style.textOverflow = 'clip';
+    });
     clone.querySelectorAll('button, input, select, textarea').forEach(control => {
         control.disabled = true;
         control.removeAttribute('onclick');
@@ -1202,6 +1240,50 @@ function openRowDetails(row) {
 
     modal.classList.add('open');
     revealAnimatedBlocks(modal);
+}
+
+function setupOrdersTableDetails() {
+    const table = document.getElementById('ordersTable');
+    if (!table || table.dataset.orderDetailsBound === '1') return;
+    table.dataset.orderDetailsBound = '1';
+
+    table.querySelectorAll('tbody tr').forEach(row => {
+        row.classList.add('order-details-row');
+        row.setAttribute('tabindex', '0');
+        row.setAttribute('aria-label', 'Open row details');
+        row.addEventListener('click', e => {
+            if (isInteractiveTableTarget(e.target)) return;
+            if (window.getSelection?.().toString()) return;
+            openRowDetails(row);
+        });
+
+        row.addEventListener('keydown', e => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            if (isInteractiveTableTarget(e.target)) return;
+            e.preventDefault();
+            openRowDetails(row);
+        });
+    });
+}
+
+function setupAdminProfileAvatar() {
+    const avatar = document.querySelector('.topbar-user .user-avatar');
+    if (!avatar || avatar.dataset.profileAvatarBound === '1') return;
+    avatar.dataset.profileAvatarBound = '1';
+
+    fetch('/Account/Profile', { headers: { Accept: 'application/json' } })
+        .then(response => response.ok ? response.json() : null)
+        .then(data => {
+            const imagePath = data?.profileImagePath;
+            if (!imagePath) return;
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Profile photo';
+            img.loading = 'lazy';
+            avatar.textContent = '';
+            avatar.appendChild(img);
+        })
+        .catch(() => {});
 }
 
 function setupMobileTableDetails() {
@@ -1272,10 +1354,11 @@ function lockNavigationByRole() {
     const permissionByPath = {
         '/admin/products': 'products',
         '/admin/carousel': 'slider',
-        '/admin/authors': 'authors',
+        '/admin/tags': 'tags',
         '/admin/genres': 'genres',
         '/admin/users': 'users',
-        '/admin/roles': 'roles'
+        '/admin/roles': 'roles',
+        '/admin/orders': 'orders'
     };
 
     const lockIconMarkup = `
@@ -1325,9 +1408,12 @@ function lockNavigationByRole() {
 
 lockNavigationByRole();
 setupFileUploadAreas();
+setupAdminProfileAvatar();
+setupOrdersTableDetails();
 setupMobileTableDetails();
 setupPageEntranceAnimation();
 setupSidebarPageTransitions();
 setupNavActiveSvgAnimation();
 applyAdminLanguage(getAdminLanguage());
 observeAdminLanguageChanges();
+

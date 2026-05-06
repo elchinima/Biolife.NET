@@ -1,4 +1,4 @@
-global using Biolife.Application.ViewModels;
+﻿global using Biolife.Application.ViewModels;
 global using Biolife.Application.Abstractions;
 global using Biolife.Domain.Entities;
 global using Biolife.Infrastructure.Services;
@@ -19,3 +19,5 @@ global using System.Security.Claims;
 global using System.Text.Json;
 global using System.Text.Encodings.Web;
 global using System.Text.RegularExpressions;
+
+
